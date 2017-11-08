@@ -1,0 +1,66 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Ol3 wms</title>
+    <link rel="stylesheet" type="text/css" href="plugin/ol4/ol.css"/>
+    <style type="text/css">
+        body, #map {
+            border: 0px;
+            margin: 0px;
+            padding: 0px;
+            width: 100%;
+            height: 100%;
+            font-size: 13px;
+        }
+    </style>
+    <script type="text/javascript" src="plugin/ol4/ol.js"></script>
+    <script type="text/javascript" src="plugin/jquery/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript">
+        var map;
+        function init(){
+            var vec_w = getTdtLayer("ter_w");
+			var wms = new ol.layer.Image({
+				source: new ol.source.ImageWMS({
+					ratio: 1,
+					url: 'wms',
+					params: {
+						"LAYERS": 'ordosMap'
+					}
+				})
+			});
+            var projection = new ol.proj.Projection({
+                code: 'EPSG:3857',
+                units: 'm'
+            });
+            map = new ol.Map({
+                controls: ol.control.defaults({
+                    attribution: false
+                }),
+                target: 'map',
+                layers: [
+//					vec_w,
+                    wms
+                ],
+                view: new ol.View({
+                    projection: projection,
+                    center: [12952179.997432144, 4876677.76966305],
+                    zoom: 9
+                })
+            });
+        }
+        function getTdtLayer(lyr){
+            var url = "http://t0.tianditu.com/DataServer?T="+lyr+"&X={x}&Y={y}&L={z}";
+            var layer = new ol.layer.Tile({
+                source: new ol.source.XYZ({
+                    url:url
+                })
+            });
+            return layer;
+        }
+    </script>
+</head>
+<body onLoad="init()">
+<div id="map">
+</div>
+</body>
+</html>

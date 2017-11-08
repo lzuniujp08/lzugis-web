@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sys>
+    <tile>
+        <path>d:/tile/geohey/</path>
+        <agspath>/Users/lzugis/Desktop/CHBaserMap</agspath>
+        <tdtpath>D:/data/tdt</tdtpath>
+    </tile>
+    <wms>
+        <shp>D:/bj_grid/GeoServer 2.11.0/data_dir/bj_grid/layer_lines.shp</shp>
+        <sld>D:/bj_grid/GeoServer 2.11.0/data_dir/styles/layer_lines.sld</sld>
+    </wms>
+</sys>
