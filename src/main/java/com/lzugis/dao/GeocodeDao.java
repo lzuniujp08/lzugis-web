@@ -9,7 +9,7 @@ import java.util.Map;
  * Created by admin on 2017/11/14.
  */
 @Repository
-public class GeocodeDao extends CommonDao{
+public class GeocodeDao extends CommonDao {
     /**
      * 根据条件获取数据
      * @param table
