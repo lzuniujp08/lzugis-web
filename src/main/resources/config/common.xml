@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sys>
-    <database>
-        <driverclassname>org.postgresql.Driver</driverclassname>
-        <url>jdbc:postgresql://localhost:5432/lzugis</url>
-        <username>postgres</username>
-        <password>root</password>
-    </database>
     <tile>
         <path>d:/tile/geohey/</path>
         <!--<path>/Users/lzugis/Downloads/tile/geohey/</path>-->
@@ -19,8 +13,6 @@
         <!--<sld>/Users/lzugis/git/lzugis-web/src/main/resources/shp/sld/world_temp.sld</sld>-->
     </wms>
     <geocode>
-        <!--<dbpath>/Users/lzugis/Documents/geocode.s3db</dbpath>-->
-        <dbpath>D:/BaiduNetdiskDownload/geocode.s3db</dbpath>
         <shproot>D:/lzugis/code/lzugis-web/src/main/resources/geocode/shp/</shproot>
         <savepath>D:/BaiduNetdiskDownload/</savepath>
     </geocode>

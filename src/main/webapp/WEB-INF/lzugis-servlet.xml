@@ -32,7 +32,7 @@
           class="com.lzugis.helper.EncryptablePropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
-                <value>/WEB-INF/jdbc.properties</value>
+                <value>/WEB-INF/config.properties</value>
             </list>
         </property>
     </bean>
