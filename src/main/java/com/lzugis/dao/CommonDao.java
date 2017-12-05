@@ -33,28 +33,11 @@ public class CommonDao {
     protected LobHandler lobHandler;
     @Autowired
     protected JdbcTemplate sqliteJdbcTemplate;
+
     private DbType databaseType;
-
+    
     public CommonDao(){
-        super();
 
-        /**
-         * 初始化Postgres
-         */
-//        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-//        dataSource.setDriverClassName(CommonConfig.getVal("database.driverclassname"));
-//        dataSource.setUrl(CommonConfig.getVal("database.url"));
-//        dataSource.setUsername(CommonConfig.getVal("database.username"));
-//        dataSource.setPassword(CommonConfig.getVal("database.password"));
-//        jdbcTemplate.setDataSource(dataSource);
-
-        /**
-         * 初始化sqlite
-         */
-        SQLiteDataSource source = new SQLiteDataSource();
-        String dbPath = CommonConfig.getVal("geocode.dbpath");
-        source.setUrl("jdbc:sqlite:"+dbPath);
-        sqliteJdbcTemplate = new JdbcTemplate(source);
     }
 
     public String table(Class clazz) {
