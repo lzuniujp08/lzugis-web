@@ -1,6 +1,6 @@
 package com.lzugis.web.servlet;
 
-import com.lzugis.web.helper.CommonConfig;
+import com.lzugis.helper.CommonConfig;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.servlet.ServletException;

@@ -1,6 +1,6 @@
 package com.lzugis.web.servlet;
 
-import com.lzugis.web.helper.CommonConfig;
+import com.lzugis.helper.CommonConfig;
 
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -34,18 +34,19 @@ import java.util.Map;
 /**
  * Created by admin on 2017/9/10.
  */
-@WebServlet(description = "wms services", urlPatterns =  {"/wms"})
+@WebServlet(description = "wms services", urlPatterns =  {"/wms"}, loadOnStartup=1)
 public class WmsServiceServlet extends HttpServlet {
-
-    private static String shpPath = "", sldPath = "";
     private static MapContent map = null;
 
     public WmsServiceServlet() {
         super();
         try{
+            ImageIO.scanForPlugins();
+            String shpPath = "", sldPath = "";
             shpPath = CommonConfig.getVal("wms.shp");
             sldPath = CommonConfig.getVal("wms.sld");
             map = new MapContent();
+            this.addShapeLayer(shpPath, sldPath);
         }
         catch(Exception e){
             e.printStackTrace();
@@ -67,17 +68,15 @@ public class WmsServiceServlet extends HttpServlet {
 
         String[] BBOXS = BBOX.split(",");
         double[] _bbox = new double[]{
-            Double.parseDouble(BBOXS[0]),
-            Double.parseDouble(BBOXS[1]),
-            Double.parseDouble(BBOXS[2]),
-            Double.parseDouble(BBOXS[3])
+                Double.parseDouble(BBOXS[0]),
+                Double.parseDouble(BBOXS[1]),
+                Double.parseDouble(BBOXS[2]),
+                Double.parseDouble(BBOXS[3])
         };
         Map paras = new HashMap();
         paras.put("bbox", _bbox);
         paras.put("width", _w);
         paras.put("height", _h);
-
-        this.addShapeLayer(shpPath, sldPath);
         this.getMapContent(paras, response);
     }
 
@@ -172,17 +171,8 @@ public class WmsServiceServlet extends HttpServlet {
 
         String shpPath = "D:/bj_grid/GeoServer 2.11.0/data_dir/bj_grid/layer_lines.shp";
         String sldPath = "D:/bj_grid/GeoServer 2.11.0/data_dir/styles/layer_lines.sld";
-
-        String imgPath = "D：/test.png";
-        Map paras = new HashMap();
-        double[] bbox = new double[]{12001021.104923526,4414278.717435024,13880760.50451258,5342529.988930204};
-        paras.put("bbox", bbox);
-        paras.put("width", 1537);
-        paras.put("height", 759);
-
         shp2img.addShapeLayer(shpPath, sldPath);
         JMapFrame.showMap(map);
-//        shp2img.getMapContent(paras, imgPath);
-        System.out.println("图片生成完成，共耗时"+(System.currentTimeMillis() - start)+"ms");
+        System.out.println("共耗时"+(System.currentTimeMillis() - start)+"ms");
     }
 }

@@ -1,7 +1,8 @@
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Ol3 wms</title>
+    <link rel="shortcut icon" type="image/x-icon" href="css/img/logo.jpg" />
     <link rel="stylesheet" type="text/css" href="plugin/ol4/ol.css"/>
     <style type="text/css">
         body, #map {
@@ -12,25 +13,122 @@
             height: 100%;
             font-size: 13px;
         }
+        .ol-popup {
+            display: none;
+            position: absolute;
+            background-color: white;
+            -moz-box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+            -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+            filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+            border: 1px solid #cccccc;
+            bottom: 12px;
+            left: -100px;
+            width: 200px;
+        }
+        .ol-popup:after, .ol-popup:before {
+            top: 100%;
+            border: solid transparent;
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+        .ol-popup:after {
+            border-top-color: white;
+            border-width: 10px;
+            left: 100px;
+            margin-left: -10px;
+        }
+        .ol-popup:before {
+            border-top-color: #cccccc;
+            border-width: 11px;
+            left: 100px;
+            margin-left: -11px;
+        }
+        .popup-title{
+            font-weight: bold;
+            border-bottom:1px solid #cccccc;
+            padding: 5px 8px;
+        }
+        .popup-content{
+            padding: 5px 8px;
+        }
+        .ol-popup-closer {
+            text-decoration: none;
+            position: absolute;
+            top: 6px;
+            right: 6px;
+        }
+        .ol-popup-closer:after {
+            content: "×";
+        }
     </style>
     <script type="text/javascript" src="plugin/ol4/ol.js"></script>
     <script type="text/javascript" src="plugin/jquery/jquery-3.1.1.min.js"></script>
     <script type="text/javascript">
         var map;
-        function init(){
-            var vec_w = getTdtLayer("ter_w");
-			var wms = new ol.layer.Image({
-				source: new ol.source.ImageWMS({
-					ratio: 1,
-					url: 'wms',
-					params: {
-						"LAYERS": 'ordosMap'
-					}
-				})
-			});
+        function init() {
+            var wktformat = new ol.format.WKT();
+
+            var vec_w = getTdtLayer("vec_w"),
+                cva_w = getTdtLayer("cva_w");
+            var wms = new ol.layer.Image({
+                source: new ol.source.ImageWMS({
+                    ratio: 1,
+                    url: 'wms',
+                    params: {
+                        "LAYERS": 'globedata_temp'
+                    }
+                })
+            });
+            /*var wms = new ol.layer.Tile({
+                visible: true,
+                source: new ol.source.TileWMS({
+                    url: 'wms',
+                    params: {
+                        tiled: true,
+                        LAYERS: 'lzugis:capital'
+                    }
+                })
+            });*/
             var projection = new ol.proj.Projection({
                 code: 'EPSG:3857',
                 units: 'm'
+            });
+
+            var container = document.getElementById('popup');
+            var content = document.getElementById('popup-content');
+            var title = document.getElementById('popup-title');
+            var closer = document.getElementById('popup-closer');
+            closer.onclick = function(){
+                container.style.display = 'none';
+                closer.blur();
+                return false;
+            };
+
+            var source = new ol.source.Vector({
+                features: []
+            });
+            var vector = new ol.layer.Vector({
+                source: source,
+                style:new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        color: '#ffcc33',
+                        width: 3,
+                        lineJoin: 'round',
+                        lineDash:[3,5]
+                    }),
+                    fill: new ol.style.Fill({
+                        color: 'rgba(255, 0, 0, 0.2)'
+                    }),
+                    image: new ol.style.Circle({
+                        radius: 6,
+                        fill: new ol.style.Fill({
+                            color: '#3400ff'
+                        })
+                    })
+                })
             });
             map = new ol.Map({
                 controls: ol.control.defaults({
@@ -38,21 +136,70 @@
                 }),
                 target: 'map',
                 layers: [
-//					vec_w,
-                    wms
+					vec_w,
+                    cva_w,
+                    wms,
+                    vector
                 ],
                 view: new ol.View({
                     projection: projection,
-                    center: [12952179.997432144, 4876677.76966305],
-                    zoom: 9
+                    center: ol.proj.transform([104.214, 35.847], 'EPSG:4326', 'EPSG:3857'),
+                    zoom: 4
                 })
             });
+
+            var overlay = new ol.Overlay({
+                element: container
+            });
+            map.addOverlay(overlay);
+
+            map.on('click', function(evt) {
+                var _lonlat = ol.proj.transform(
+                    evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+                $.get("geocode",{
+                    lon:_lonlat[0],
+                    lat:_lonlat[1],
+                    zoom:map.getView().getZoom(),
+                    type:"json"
+                }, function (result) {
+                    result = JSON.parse(result);
+                    console.log(result);
+                    var areaname = result.area?result.area.areaname:"",
+                        poiname = result.poi?result.poi.poiname:"";
+                    var content = '<p>当前位置:</p><code>' +
+                        areaname+";"+
+                        poiname+'</code>';
+                    showInfo(evt.coordinate, content);
+
+                    source.clear();
+                    if(result.area) {
+                        var feature = wktformat.readFeature(result.area.pointsdata);
+                        feature.getGeometry().transform('EPSG:4326', 'EPSG:3857');
+                        source.addFeature(feature);
+                    }
+                    if(result.poi) {
+                        var wkt = "POINT(" + result.poi.x + " " + result.poi.y + ")";
+                        var featurePoi = wktformat.readFeature(wkt);
+                        featurePoi.getGeometry().transform('EPSG:4326', 'EPSG:3857');
+                        source.addFeature(featurePoi);
+                    }
+                })
+            });
+
+            function showInfo(coordinate, info){
+                overlay.setPosition(coordinate);
+                container.style.display = 'block';
+                title.innerHTML = "提示信息";
+                content.innerHTML = info;
+                title.style.display = 'block';
+//                map.getView().setCenter(coordinate);
+            }
         }
-        function getTdtLayer(lyr){
-            var url = "http://t0.tianditu.com/DataServer?T="+lyr+"&X={x}&Y={y}&L={z}";
+        function getTdtLayer(lyr) {
+            var url = "http://t0.tianditu.com/DataServer?T=" + lyr + "&X={x}&Y={y}&L={z}";
             var layer = new ol.layer.Tile({
                 source: new ol.source.XYZ({
-                    url:url
+                    url: url
                 })
             });
             return layer;
@@ -61,6 +208,11 @@
 </head>
 <body onLoad="init()">
 <div id="map">
+    <div id="popup" class="ol-popup">
+        <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+        <div id="popup-title" class="popup-title"></div>
+        <div id="popup-content" class="popup-content"></div>
+    </div>
 </div>
 </body>
 </html>

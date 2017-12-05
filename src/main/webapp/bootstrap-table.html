@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BootStrap Table使用</title>
+    <link rel="shortcut icon" type="image/x-icon" href="css/img/logo.jpg" />
+    <link href="plugin/bootstrap/css/bootstrap.css" rel="stylesheet" />
+    <link href="plugin/bootstrap/css/bootstrap-table.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="plugin/ol4/ol.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-table.css"/>
+</head>
+<body>
+<!-- loading -->
+<div class="modal fade" id="loading" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop='static'>
+    <div class="modal-dialog" role="document">
+        <img src="css/img/loading.gif">
+    </div>
+</div>
+
+<div id="alert" class="alert alert-success">
+    <a href="#" class="close" data-dismiss="alert">&times;</a>
+    <strong>提示：</strong><span id="alert_info"></span>
+</div>
+<div class="panel panel-default panel-nav">
+    Bootstrap Table
+</div>
+<div id="map">
+    <ul class="base-map-select" id="basemap">
+        <li type="vec_w" class="active">
+            <img src="css/img/basemap/vec.png"><br/>矢量
+        </li>
+        <li type="img_w">
+            <img src="css/img/basemap/img.png"><br/>影像
+        </li>
+        <li type="ter_w">
+            <img src="css/img/basemap/ter.png"><br/>地形
+        </li>
+        <div class="ano-layer">
+            <input type="checkbox" checked="checked" id="isano">标注
+        </div>
+    </ul>
+    <ul class="map-tools" id="maptools">
+        <li type="zoomin" title="rect zoom in"><span class="glyphicon glyphicon-zoom-in"></span></li>
+        <li type="zoomout" title="rect zoom out"><span class="glyphicon glyphicon-zoom-out"></span></li>
+    </ul>
+</div>
+<div class="panel panel-default data-panel" id="panel" style="display: none;">
+    <div id="toolbar">
+        <div class="btn-group">
+            <button type="button" title="数据下载" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <span class="glyphicon glyphicon-circle-arrow-down"></span>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" id="download">
+                <li><a href="#" type="xls">excel格式</a></li>
+                <li><a href="#" type="csv">csv格式</a></li>
+                <li><a href="#" type="shp">shape格式</a></li>
+            </ul>
+        </div>
+        <button type="button" class="btn btn-default" id="chart" title="展示统计图">
+            <span class="glyphicon glyphicon-tasks"></span>
+        </button>
+        <div class="btn-group">
+            <button type="button" title="展示方式" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <span class="glyphicon glyphicon-globe"></span>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" id="showtype">
+                <li><a><input type="radio" value="scatter" name="showtype" checked="true">散点图</a></li>
+                <li><a><input type="radio" value="cluster" name="showtype">聚类图</a></li>
+                <li><a><input type="radio" value="heatmap" name="showtype">热力图</a></li>
+            </ul>
+        </div>
+    </div>
+    <!--glyphicon-chevron-up-->
+    <span class="glyphicon glyphicon-chevron-down" id="panelclose"></span>
+    <div class="panel-heading">查询结果</div>
+    <div class="panel-body" id="panelbody">
+        <table id="datagrid"></table>
+    </div>
+</div>
+<script src="plugin/ol4/ol.js"></script>
+<script src="plugin/jquery/jquery-3.1.1.min.js"></script>
+<script src="plugin/jquery/jquery.extend.divenent.js"></script>
+<script src="plugin/bootstrap/js/bootstrap.js"></script>
+<script src="plugin/bootstrap/js/bootstrap-table.js"></script>
+<script src="plugin/bootstrap/js/bootstrap-table-zh-CN.js"></script>
+<script src="js/bootstrap-table.js"></script>
+</body>
+</html>

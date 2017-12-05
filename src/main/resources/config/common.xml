@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sys>
+    <database>
+        <driverclassname>org.postgresql.Driver</driverclassname>
+        <url>jdbc:postgresql://localhost:5432/lzugis</url>
+        <username>postgres</username>
+        <password>root</password>
+    </database>
     <tile>
-        <path>d:/tile/geohey/</path>
+        <!--<path>d:/tile/geohey/</path>-->
+        <path>/Users/lzugis/Downloads/tile/geohey/</path>
         <agspath>/Users/lzugis/Desktop/CHBaserMap</agspath>
         <tdtpath>D:/data/tdt</tdtpath>
     </tile>
     <wms>
-        <shp>D:/bj_grid/GeoServer 2.11.0/data_dir/bj_grid/layer_lines.shp</shp>
-        <sld>D:/bj_grid/GeoServer 2.11.0/data_dir/styles/layer_lines.sld</sld>
+        <!--<shp>D:/lzugis/code/lzugis-web/src/main/resources/shp/globedata_temp.shp</shp>-->
+        <!--<sld>D:/lzugis/code/lzugis-web/src/main/resources/shp/sld/world_temp.sld</sld>-->
+        <shp>/Users/lzugis/git/lzugis-web/src/main/resources/shp/globedata_temp.shp</shp>
+        <sld>/Users/lzugis/git/lzugis-web/src/main/resources/shp/sld/world_temp.sld</sld>
     </wms>
+    <geocode>
+        <dbpath>/Users/lzugis/Documents/geocode.s3db</dbpath>
+        <!--<dbpath>D:/lzugis/code/lzugis-web/src/main/resources/geocode/db/geocode.s3db</dbpath>-->
+        <shproot>D:/lzugis/code/lzugis-web/src/main/resources/geocode/shp/</shproot>
+    </geocode>
 </sys>

@@ -1,6 +1,6 @@
 package com.lzugis.web.servlet;
 
-import com.lzugis.web.helper.CommonConfig;
+import com.lzugis.helper.CommonConfig;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
@@ -20,7 +20,6 @@ import java.net.URL;
 public class TileServiceServlet extends HttpServlet {
 
     private String url = "https://s4.geohey.com/s/mapping/";
-//    private String tilepath = "d:/tile/geohey/";
     private String tilepath = CommonConfig.getVal("tile.path");
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
