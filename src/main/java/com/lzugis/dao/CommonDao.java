@@ -7,6 +7,7 @@ import com.lzugis.helper.CommonConfig;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.support.lob.LobCreator;
@@ -26,9 +27,12 @@ import java.util.*;
  */
 public class CommonDao {
     // 创建JDBC模板
-    protected JdbcTemplate jdbcTemplate = new JdbcTemplate();
-    protected JdbcTemplate sqliteJdbcTemplate;
+    @Autowired
+    protected JdbcTemplate jdbcTemplate;
+    @Autowired
     protected LobHandler lobHandler;
+    @Autowired
+    protected JdbcTemplate sqliteJdbcTemplate;
     private DbType databaseType;
 
     public CommonDao(){
@@ -37,12 +41,12 @@ public class CommonDao {
         /**
          * 初始化Postgres
          */
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(CommonConfig.getVal("database.driverclassname"));
-        dataSource.setUrl(CommonConfig.getVal("database.url"));
-        dataSource.setUsername(CommonConfig.getVal("database.username"));
-        dataSource.setPassword(CommonConfig.getVal("database.password"));
-        jdbcTemplate.setDataSource(dataSource);
+//        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+//        dataSource.setDriverClassName(CommonConfig.getVal("database.driverclassname"));
+//        dataSource.setUrl(CommonConfig.getVal("database.url"));
+//        dataSource.setUsername(CommonConfig.getVal("database.username"));
+//        dataSource.setPassword(CommonConfig.getVal("database.password"));
+//        jdbcTemplate.setDataSource(dataSource);
 
         /**
          * 初始化sqlite
@@ -51,52 +55,6 @@ public class CommonDao {
         String dbPath = CommonConfig.getVal("geocode.dbpath");
         source.setUrl("jdbc:sqlite:"+dbPath);
         sqliteJdbcTemplate = new JdbcTemplate(source);
-
-        lobHandler = new LobHandler() {
-            public byte[] getBlobAsBytes(ResultSet rs, String columnName) throws SQLException {
-                return new byte[0];
-            }
-
-            public byte[] getBlobAsBytes(ResultSet rs, int columnIndex) throws SQLException {
-                return new byte[0];
-            }
-
-            public InputStream getBlobAsBinaryStream(ResultSet rs, String columnName) throws SQLException {
-                return null;
-            }
-
-            public InputStream getBlobAsBinaryStream(ResultSet rs, int columnIndex) throws SQLException {
-                return null;
-            }
-
-            public String getClobAsString(ResultSet rs, String columnName) throws SQLException {
-                return null;
-            }
-
-            public String getClobAsString(ResultSet rs, int columnIndex) throws SQLException {
-                return null;
-            }
-
-            public InputStream getClobAsAsciiStream(ResultSet rs, String columnName) throws SQLException {
-                return null;
-            }
-
-            public InputStream getClobAsAsciiStream(ResultSet rs, int columnIndex) throws SQLException {
-                return null;
-            }
-
-            public Reader getClobAsCharacterStream(ResultSet rs, String columnName) throws SQLException {
-                return null;
-            }
-
-            public Reader getClobAsCharacterStream(ResultSet rs, int columnIndex) throws SQLException {
-                return null;
-            }
-
-            public LobCreator getLobCreator() {
-                return null;
-            }
-        };
     }
 
     public String table(Class clazz) {

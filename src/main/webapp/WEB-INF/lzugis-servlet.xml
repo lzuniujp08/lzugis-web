@@ -27,4 +27,56 @@
             <value>.jsp</value>
         </property>
     </bean>
+
+    <bean id="propertyConfigurer"
+          class="com.lzugis.helper.EncryptablePropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>/WEB-INF/jdbc.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driverClassName}" />
+        <property name="url" value="${jdbc.url}" />
+        <property name="username" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+        <property name="maxWaitMillis" value="10000" />
+        <property name="maxTotal" value="-1" />
+        <property name="maxIdle" value="30" />
+        <property name="minIdle" value="5" />
+        <property name="initialSize" value="5" />
+        <property name="timeBetweenEvictionRunsMillis" value="60000" />
+        <property name="minEvictableIdleTimeMillis" value="600000" />
+        <property name="validationQueryTimeout" value="1" />
+        <property name="numTestsPerEvictionRun" value="3" />
+        <property name="testWhileIdle" value="true" />
+        <property name="testOnBorrow" value="false" />
+        <property name="testOnReturn" value="false" />
+        <property name="validationQuery" value="select 1 " />
+        <property name="defaultAutoCommit" value="true" />
+        <property name="removeAbandonedOnMaintenance" value="true" />
+        <property name="removeAbandonedTimeout" value="300" />
+    </bean>
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <bean id="geodataSource" class="org.sqlite.SQLiteDataSource">
+        <property name="url" value="${geocode.url}" />
+    </bean>
+
+    <bean id="sqliteJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="geodataSource" />
+    </bean>
+
+    <bean id="nativeJdbcExtractor"
+          class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor">
+    </bean>
+
+    <bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler">
+        <property name="nativeJdbcExtractor" ref="nativeJdbcExtractor"></property>
+    </bean>
 </beans>
