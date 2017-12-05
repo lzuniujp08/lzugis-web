@@ -1,10 +1,14 @@
 package com.lzugis.dao;
 
 import com.lzugis.dao.jdbc.util.AnnotationUtil;
+import com.lzugis.helper.CommonConfig;
 import com.lzugis.services.model.County;
 import com.lzugis.services.model.GeocodePoint;
 import org.json.simple.JSONObject;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Repository;
+import org.sqlite.SQLiteDataSource;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +18,22 @@ import java.util.UUID;
  */
 @Repository
 public class TestDao extends CommonDao {
+
+    public TestDao(){
+        jdbcTemplate = new JdbcTemplate();
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(CommonConfig.getVal("database.driverclassname"));
+        dataSource.setUrl(CommonConfig.getVal("database.url"));
+        dataSource.setUsername(CommonConfig.getVal("database.username"));
+        dataSource.setPassword(CommonConfig.getVal("database.password"));
+        jdbcTemplate.setDataSource(dataSource);
+
+        SQLiteDataSource source = new SQLiteDataSource();
+        String dbPath = CommonConfig.getVal("geocode.dbpath");
+        source.setUrl("jdbc:sqlite:"+dbPath);
+        sqliteJdbcTemplate = new JdbcTemplate(source);
+    }
+
     public List getDbData() throws Exception{
         List list = jdbcTemplate.queryForList("select name, lon, lat from capital");
         return list;
@@ -30,7 +50,6 @@ public class TestDao extends CommonDao {
 
     public static void main(String[] args){
         TestDao test = new TestDao();
-
         //插入数据
 //        for(int i=0;i<10;i++){
 //            String name = "LZUGIS"+i;
