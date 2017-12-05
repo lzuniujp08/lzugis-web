@@ -3,13 +3,12 @@ package com.lzugis.services;
 import com.lzugis.dao.TestDao;
 import com.lzugis.dao.jdbc.util.AnnotationUtil;
 import com.lzugis.services.model.GeocodePoint;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.ResultSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by admin on 2017/11/13.
@@ -31,5 +30,14 @@ public class TestService {
     public List getDbData() throws Exception{
         List list = testDao.getDbData();
         return list;
+    }
+
+    public Map addGeoPOI(GeocodePoint poi){
+        Map result = new HashMap();
+        if(!StringUtils.isNotBlank(poi.getId())){
+            poi.setId(UUID.randomUUID().toString());
+        }
+        result.put("flag", testDao.save(poi));
+        return result;
     }
 }

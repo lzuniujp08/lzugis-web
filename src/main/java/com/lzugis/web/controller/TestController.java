@@ -1,13 +1,20 @@
 package com.lzugis.web.controller;
 
 import com.lzugis.services.TestService;
+import com.lzugis.services.model.GeocodePoint;
+import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +26,11 @@ import java.util.Map;
 public class TestController {
     @Autowired
     private TestService testService;
+
+    @InitBinder("geocodePoint")
+    public void initBinderServer(WebDataBinder binder) {
+        binder.setFieldDefaultPrefix("geopoi.");
+    }
 
     @RequestMapping(value="test/sayHello")
     public ModelAndView sayHello(String name){
@@ -47,9 +59,15 @@ public class TestController {
         try {
             List dbData = testService.getDbData();
             response.setHeader("Content-type", "text/html;charset=UTF-8");
-            response.getWriter().println(dbData);
+            JSONArray.writeJSONString(dbData, response.getWriter());
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    @RequestMapping({"/poi/add"})
+    @ResponseBody
+    public Map addGeoPOI(GeocodePoint poi){
+        return testService.addGeoPOI(poi);
     }
 }
