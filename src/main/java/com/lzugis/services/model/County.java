@@ -1,5 +1,6 @@
 package com.lzugis.services.model;
 
+import com.lzugis.dao.jdbc.annotation.JIgnore;
 import com.lzugis.dao.jdbc.annotation.JKey;
 import com.lzugis.dao.jdbc.annotation.JTable;
 
@@ -10,6 +11,8 @@ public class County {
 
     private double area, perimeter, x, y;
     private String name;
+
+    @JIgnore
     private Object geom;
 
     public int getGid() {
