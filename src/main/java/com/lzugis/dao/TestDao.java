@@ -1,7 +1,9 @@
 package com.lzugis.dao;
 
 import com.lzugis.dao.jdbc.util.AnnotationUtil;
+import com.lzugis.services.model.County;
 import com.lzugis.services.model.GeocodePoint;
+import org.json.simple.JSONObject;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -29,6 +31,7 @@ public class TestDao extends CommonDao {
     public static void main(String[] args){
         TestDao test = new TestDao();
 
+        //插入数据
 //        for(int i=0;i<10;i++){
 //            String name = "LZUGIS"+i;
 //            GeocodePoint point = new GeocodePoint();
@@ -38,15 +41,30 @@ public class TestDao extends CommonDao {
 //            if(flat>0)System.out.println(name+" has saved success!");
 //        }
 
-        String name="LZUGIS1";
-        GeocodePoint point = (GeocodePoint)test.get(GeocodePoint.class, name, "name");
-        if(null==point){
-            System.out.println(name);
-        }else{
+        //获取对象以及更新对象
+//        String name="LZUGIS18";
+//        GeocodePoint point = (GeocodePoint)test.get(GeocodePoint.class, name, "name");
+//        point.setName("LZUGIS10");
+//        test.save(point);
+//        if(null==point){
+//            System.out.println(name);
+//        }else{
+//            System.out.println(point.getName());
+//        }
+        //删除对象
+//        test.delete(test.table(GeocodePoint.class), "name", point.getName());
 
-            System.out.println(point.getName());
-        }
+        //分页查询
+        String select = "select gid, name, x, y";
+        String exceptSelect =  " from "+test.table(County.class)+" t where 1=1 ";
+        Page<County> page = test.paginate(County.class, 1, 10, select,exceptSelect,null);
+        System.out.println(page.getPageNumber());
+        System.out.println(page.getTotalPage());
+        System.out.println(page.getTotalRow());
+        System.out.println(page.getPageSize());
+        System.out.println(page.getList().toString());
+
 
 //        test.jdbcTempTest();
-    }
+    }/**/
 }
