@@ -1,4 +1,3 @@
-$('#loading').modal('show');
 //1. 初始化地图
 var wktformat = new ol.format.WKT();
 
@@ -139,7 +138,7 @@ $("#basemap>li").on("click", function(){
         $("#isano").parent().css("right", right).show();
     }
     anno_lyr.setVisible($("#isano")[0].checked);
-})
+});
 $("#isano").on('change', function() {
     anno_lyr.setVisible(this.checked);
 });
@@ -174,7 +173,83 @@ $("#maptools>li").on("click", function(){
     dragZoom.set("out", type==="zoomin"?false:true);
     dragZoom.setActive(true);
     map.getViewport().style.cursor="crosshair";
-})
+});
+
+$("#query_close").on("click", function(){
+    $("#querybox").toggle("slow", function(){
+        if($("#querybox").is(":visible")){
+            $("#query_close").removeClass("glyphicon-circle-arrow-left");
+            $("#query_close").addClass("glyphicon-circle-arrow-right");
+
+        }else{
+            $("#query_close").removeClass("glyphicon-circle-arrow-right");
+            $("#query_close").addClass("glyphicon-circle-arrow-left");
+        }
+    });
+});
+
+$("#issave").on("change", function(){
+    this.checked?$("#btn-save").show():$("#btn-save").hide();
+});
+
+$("ul#myTab>li>a").on("click", function(){
+    $("ul#myTab>li").removeClass("active");
+    $("#querybox>table").hide();
+    $(this).parent().addClass("active");
+    $($(this).attr("href")).show();
+});
+
+function showQueryList(){
+    $.post("geocode/getlist", null, function (result) {
+        result = JSON.parse(result);
+        if(result.code==="200"){
+            var list = JSON.parse(result.data);
+            $("#sel_querylist").html("").append('<option value="">--请选择--</option>');
+            for(var i=0;i<list.length;i++){
+                var _opt = $("<option/>").attr("value", list[i].id).html(list[i].name);
+                $("#sel_querylist").append(_opt);
+            }
+        }else{
+            $("#alert_info").html(result.msg);
+            $("#alert").show();
+            setTimeout(function () {
+                $("#alert").hide();
+            }, 1500);
+        }
+    })
+}
+
+$(".btn-query").on("click", function(){
+    var handle = $(this).attr("handle");
+    switch (handle){
+        case "query":{
+            getQueryResult();
+            break;
+        }
+        case "save":{
+            var _name = $("#sel_dataset").val()+"_"+$("#sel_var").val()+"_"+$("#sel_facset").val();
+            var para = {
+                "qlist.name":_name,
+                "qlist.autorun":$("#autorun")[0].checked?"1":"0",
+                "qlist.query_xml":_name+".xml"
+            };
+            $.post("geocode/savequery", para, function(result){
+                result = JSON.parse(result);
+                $("#alert_info").html(result.msg);
+                $("#alert").show();
+                showQueryList();
+                setTimeout(function () {
+                    $("#alert").hide();
+                }, 1500);
+            });
+            break;
+        }
+        default:{
+            $("#sel_dataset, #sel_var, #sel_facset, #datetime").val("");
+            break;
+        }
+    }
+});
 
 function getTdtSource(lyr) {
     var url = "http://t0.tianditu.com/DataServer?T=" + lyr + "&X={x}&Y={y}&L={z}";
@@ -185,6 +260,12 @@ function getTdtSource(lyr) {
 
 //2. 初始化Table
 setTimeout(function(){
+    showQueryList();
+}, 1000);
+
+function getQueryResult(){
+    $('#loading').modal('show');
+    $("#querybox").hide("slow");
     var paras = {
         limit: 60000,   //页面大小
         offset: 0,
@@ -193,16 +274,16 @@ setTimeout(function(){
     $.get("geocode/getpois", paras, function(result){
         result = eval("("+result+")");
         $("#alert_info").html("共查询到"+result.length+"条记录");
-        $('#alert').show();
+        $("#alert").show();
         $('#loading').modal('hide');
         setTimeout(function(){
-            $("#alert").alert('close');
+            $("#alert").hide();
             var oTable = new TableInit(result);
             oTable.Init();
             $("#panel").show();
         }, 1000);
     })
-}, 1000);
+}
 
 function TableInit(griddata){
     loadData(griddata);

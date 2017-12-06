@@ -1,13 +1,13 @@
 package com.lzugis.services;
 
 import com.lzugis.dao.GeocodeDao;
+import com.lzugis.dao.jdbc.util.AnnotationUtil;
 import com.lzugis.helper.*;
-import com.lzugis.services.model.GeocodePoints;
-import com.lzugis.services.model.GeocodePolygon;
-import com.lzugis.services.model.GeocodePolyline;
-import com.lzugis.services.model.GeocodeShpInfo;
+import com.lzugis.services.model.*;
 import com.lzugis.services.utils.GeocodeUtil;
 import com.lzugis.services.utils.ShpUtil;
+import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONArray;
 import org.opengis.feature.simple.SimpleFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -115,6 +115,51 @@ public class GeocodeService {
         }else{
             csvHelper.write2CsvFile(csvPath, points.getTableFields(), rows);
         }
+    }
+
+    public Map saveQueryList(QueryList qlist){
+        Map result = new HashMap();
+        try{
+            QueryList _qlist = (QueryList)geoDao.get(QueryList.class, qlist.getName(), "name");
+            if(null == _qlist){
+                qlist.setId(UUID.randomUUID().toString());
+                int r = geoDao.save(qlist);
+                if(r>0){
+                    result.put("code", "200");
+                    result.put("msg", qlist.getName()+"保存成功！");
+                    result.put("data",null);
+                }else{
+                    result.put("code", "500");
+                    result.put("msg", qlist.getName()+"保存失败！");
+                    result.put("data",null);
+                }
+            }
+            else{
+                result.put("code", "200");
+                result.put("msg", qlist.getName()+"保存成功！");
+                result.put("data",null);
+            }
+        }catch (Exception e){
+            result.put("code", "500");
+            result.put("msg", e.getMessage());
+            result.put("data",null);
+        }
+        return result;
+    }
+
+    public Map getQueryList(){
+        Map result = new HashMap();
+        try{
+            List list = geoDao.selectForList("select * from "+geoDao.table(QueryList.class));
+            result.put("code", "200");
+            result.put("msg", "查询成功！");
+            result.put("data", JSONArray.toJSONString(list));
+        }catch (Exception e){
+            result.put("code", "500");
+            result.put("msg", e.getMessage());
+            result.put("data",null);
+        }
+        return result;
     }
 
     /**

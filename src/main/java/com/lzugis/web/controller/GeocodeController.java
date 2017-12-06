@@ -1,11 +1,14 @@
 package com.lzugis.web.controller;
 
 import com.lzugis.services.GeocodeService;
+import com.lzugis.services.model.QueryList;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +24,12 @@ import java.util.Map;
 public class GeocodeController {
     @Autowired
     private GeocodeService geoService;
+
+    @InitBinder("queryList")
+    public void initBinderServer(WebDataBinder binder) {
+        binder.setFieldDefaultPrefix("qlist.");
+    }
+
 
     @RequestMapping(value="geocode")
     public void getLonlatGeocode(double lon, double lat, int zoom, String type, HttpServletResponse response){
@@ -96,4 +105,29 @@ public class GeocodeController {
             e.printStackTrace();
         }
     }
+
+    @RequestMapping(value="geocode/savequery")
+    public void saveQueryList(QueryList qlist, HttpServletResponse response){
+        try {
+            Map result = geoService.saveQueryList(qlist);
+            response.setHeader("Content-type", "text/html;charset=UTF-8");
+            JSONObject.writeJSONString(result, response.getWriter());
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @RequestMapping(value="geocode/getlist")
+    public void getQueryList( HttpServletResponse response){
+        try {
+            Map result = geoService.getQueryList();
+            response.setHeader("Content-type", "text/html;charset=UTF-8");
+            JSONObject.writeJSONString(result, response.getWriter());
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
 }

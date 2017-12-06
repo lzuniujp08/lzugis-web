@@ -44,6 +44,7 @@
         <li type="zoomout" title="rect zoom out"><span class="glyphicon glyphicon-zoom-out"></span></li>
     </ul>
 </div>
+
 <div class="panel panel-default data-panel" id="panel" style="display: none;">
     <div id="toolbar">
         <div class="btn-group">
@@ -77,6 +78,92 @@
     <div class="panel-heading">查询结果</div>
     <div class="panel-body" id="panelbody">
         <table id="datagrid"></table>
+    </div>
+</div>
+
+<div class="panel panel-querybox">
+    <span class="glyphicon glyphicon-circle-arrow-right" id="query_close"></span>
+    <div class="panel-body" id="querybox">
+        <ul id="myTab" class="nav nav-tabs">
+            <li class="active"><a href="#querynew" data-toggle="tab">新建查询</a></li>
+            <li><a href="#querylist" data-toggle="tab">查询列表</a></li>
+        </ul>
+        <table cellpadding="0" cellspacing="0" id="querylist">
+            <tr>
+                <th>查询列表：</th>
+                <td>
+                    <select id="sel_querylist">
+                        <option value="">--请选择--</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button handle="query" type="button" class="btn btn-default btn-query">
+                        查询
+                    </button>
+                    <button handle="clear" type="button" class="btn btn-default btn-query">
+                        清空
+                    </button>
+                </td>
+            </tr>
+        </table>
+        <table cellpadding="0" cellspacing="0" id="querynew">
+            <tr>
+                <th>数据集：</th>
+                <td>
+                    <select id="sel_dataset">
+                        <option value="">--请选择--</option>
+                        <option value="maxtem">极高温</option>
+                        <option value="mixtem">极低温</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>变量：</th>
+                <td>
+                    <select id="sel_var">
+                        <option value="">--请选择--</option>
+                        <option value="temp">温度</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>设施集：</th>
+                <td>
+                    <select  id="sel_facset">
+                        <option value="">--请选择--</option>
+                        <option value="station">变电站</option>
+                        <option value="tower">杆塔</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>时间：</th>
+                <td>
+                    <input type="date" id="datetime">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input id="issave" type="checkbox">是否保存
+                    <input id="autorun" type="checkbox">是否自动运行
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button handle="save" type="button" class="btn btn-warning btn-query" id="btn-save">
+                        保存
+                    </button>
+                    <button handle="query" type="button" class="btn btn-default btn-query">
+                        查询
+                    </button>
+                    <button handle="clear" type="button" class="btn btn-default btn-query">
+                        清空
+                    </button>
+                </td>
+            </tr>
+        </table>
     </div>
 </div>
 <script src="plugin/ol4/ol.js"></script>

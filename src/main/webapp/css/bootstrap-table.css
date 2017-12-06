@@ -78,6 +78,38 @@ ul {
       cursor: pointer;
       background: rgba(0, 60, 136, 0.7); }
 
+.panel-querybox {
+  position: absolute;
+  top: 120px;
+  right: 0;
+  z-index: 9;
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: 2px 2px 3px #ccc; }
+  .panel-querybox span#query_close {
+    float: right;
+    margin: 5px;
+    cursor: pointer;
+    position: absolute;
+    right: 0; }
+  .panel-querybox .panel-body table {
+    width: 250px; }
+    .panel-querybox .panel-body table tr th, .panel-querybox .panel-body table tr td {
+      height: 50px;
+      text-align: center; }
+    .panel-querybox .panel-body table tr th {
+      text-align: right; }
+    .panel-querybox .panel-body table tr td select {
+      width: 150px; }
+    .panel-querybox .panel-body table tr td input[type="checkbox"]:not(:first-child) {
+      margin-left: 15px; }
+    .panel-querybox .panel-body table tr td button:not(:first-child) {
+      margin-left: 8px; }
+    .panel-querybox .panel-body table tr td button#btn-save {
+      display: none; }
+  .panel-querybox .panel-body table#querylist {
+    display: none; }
+
 #toolbar {
   margin-top: -1px !important;
   margin-left: 4px !important; }
