@@ -30,6 +30,7 @@ public class TestController {
     }
 
     @RequestMapping(value="test/sayHello")
+    @ResponseBody
     public ModelAndView sayHello(String name){
         String msg = "Hello " + name;
         ModelAndView mav = new ModelAndView("hello");
@@ -38,6 +39,7 @@ public class TestController {
     }
 
     @RequestMapping(value="test/calculate")
+    @ResponseBody
     public void calcNums(double num1, double num2, String type, HttpServletResponse response) throws IOException{
         double r = testService.calcNums(num1, num2, type);
         Map<String, String> mapC = new HashMap();
@@ -52,13 +54,14 @@ public class TestController {
     }
 
     @RequestMapping(value="test/dbtest")
-    public void databaseTest(HttpServletResponse response){
+    @ResponseBody
+    public List databaseTest(HttpServletResponse response){
         try {
             List dbData = testService.getDbData();
-            response.setHeader("Content-type", "text/html;charset=UTF-8");
-            JSONArray.writeJSONString(dbData, response.getWriter());
+            return dbData;
         }catch (Exception e){
             e.printStackTrace();
+            return null;
         }
     }
 
