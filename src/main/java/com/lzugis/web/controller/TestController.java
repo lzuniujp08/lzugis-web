@@ -14,10 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by admin on 2017/11/13.
@@ -67,7 +64,12 @@ public class TestController {
 
     @RequestMapping({"/poi/add"})
     @ResponseBody
-    public Map addGeoPOI(GeocodePoint poi){
-        return testService.addGeoPOI(poi);
+    public List addGeoPOI(GeocodePoint poi){
+        List list = new ArrayList();
+        list.add(poi);
+        list.add(poi);
+        list.add(poi);
+        list.add(poi);
+        return list;
     }
 }

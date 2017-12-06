@@ -61,7 +61,7 @@ ul {
   #map ul.map-tools {
     position: absolute;
     z-index: 9;
-    top: 54.5px;
+    top: 60px;
     left: 10px;
     margin: 0; }
     #map ul.map-tools li {
@@ -80,7 +80,7 @@ ul {
 
 .panel-querybox {
   position: absolute;
-  top: 120px;
+  top: 160px;
   right: 0;
   z-index: 9;
   background: white;
