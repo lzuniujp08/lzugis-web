@@ -67,7 +67,7 @@ public class GeocodeService {
     }
 
     public Map getGeocodePoi(int limit, int offset){
-        String filter = " limit ? offset ?";
+        String filter = " ORDER BY RANDOM() limit ? offset ?";
         Object[] paras = new Object[]{limit, offset};
         if(rows.size()==0) {
             rows = geoDao.getDataByFilter(points.getTableName(), points.getTableFields(), filter, paras);
