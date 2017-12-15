@@ -75,13 +75,13 @@
         <property name="dataSource" ref="dataSource" />
     </bean>
 
-    <bean id="geodataSource" class="org.sqlite.SQLiteDataSource">
+    <!--<bean id="geodataSource" class="org.sqlite.SQLiteDataSource">
         <property name="url" value="${geocode.url}" />
     </bean>
 
     <bean id="sqliteJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
         <property name="dataSource" ref="geodataSource" />
-    </bean>
+    </bean>-->
 
     <bean id="nativeJdbcExtractor"
           class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor">
