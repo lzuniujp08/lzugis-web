@@ -43,8 +43,8 @@ public class GeocodeController {
                 result.put("poi", poi);
                 JSONObject.writeJSONString(result, response.getWriter());
             }else{
-                result.put("area", area.get("areaname"));
-                result.put("poi", poi.get("poiname"));
+                if(null!=area)result.put("area", area.get("areaname"));
+                if(null!=poi)result.put("poi", poi.get("poiname"));
                 JSONObject.writeJSONString(result, response.getWriter());
             }
         }catch (Exception e){
