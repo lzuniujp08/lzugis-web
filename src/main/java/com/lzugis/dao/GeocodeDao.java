@@ -27,8 +27,8 @@ public class GeocodeDao extends CommonDao {
                 sql.append(", ");
             }
         }
-//        sql.append(" from "+table + " "+ filters);
-        sql.append(" from "+table + " ORDER BY RANDOM() "+ filters);
+        sql.append(" from "+table + " "+ filters);
+//        sql.append(" from "+table + " ORDER BY RANDOM() "+ filters);
         return sqliteJdbcTemplate.queryForList(sql.toString(), values);
     }
 

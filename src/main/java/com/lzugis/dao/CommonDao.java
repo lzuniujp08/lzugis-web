@@ -31,13 +31,20 @@ public class CommonDao {
     protected JdbcTemplate jdbcTemplate;
     @Autowired
     protected LobHandler lobHandler;
-    @Autowired
+
     protected JdbcTemplate sqliteJdbcTemplate;
 
     private DbType databaseType;
 
     public CommonDao(){
-
+        super();
+        /**
+         * 初始化sqlite
+         */
+        SQLiteDataSource source = new SQLiteDataSource();
+        String dbPath = CommonConfig.getVal("geocode.dbpath");
+        source.setUrl("jdbc:sqlite:"+dbPath);
+        sqliteJdbcTemplate = new JdbcTemplate(source);
     }
 
     public String table(Class clazz) {
