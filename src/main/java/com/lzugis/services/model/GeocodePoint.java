@@ -11,6 +11,16 @@ public class GeocodePoint {
     @JKey
     private String id;
 
+    public String getGeohash() {
+        return geohash;
+    }
+
+    public void setGeohash(String geohash) {
+        this.geohash = geohash;
+    }
+
+    private String geohash;
+
     public String getId() {
         return id;
     }

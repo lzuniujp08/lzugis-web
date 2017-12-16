@@ -32,8 +32,19 @@ public class GeocodePoints {
 
     public String[] getTableFields(){
         return new String[]{"id", "poiname",
-                "x", "y", "minzoom", "maxzoom"};
+                "x", "y", "minzoom", "maxzoom", "geohash"};
     }
+
+
+    public String getGeohash() {
+        return geohash;
+    }
+
+    public void setGeohash(String geohash) {
+        this.geohash = geohash;
+    }
+
+    private String geohash;
 
     public Double getMinzoom() {
         return minzoom;

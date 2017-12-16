@@ -203,6 +203,7 @@ public class ShpUtil {
      * @return
      */
     private Object[] getPointInfo(SimpleFeature feature){
+        GeoHash geohash = new GeoHash();
         Point geom = (Point)feature.getAttribute("the_geom");
 
         String id = UUID.randomUUID().toString();
@@ -215,12 +216,15 @@ public class ShpUtil {
                 maxzoom = null==feature.getAttribute("maxzoom")?
                         21:(Integer) feature.getAttribute("maxzoom");
 
+        String strGeohash = geohash.encode(geom.getY(), geom.getX(), 0);
         return new Object[]{
                 id,
                 poiname,
                 geom.getX(),
                 geom.getY(),
-                minzoom, maxzoom
+                minzoom,
+                maxzoom,
+                strGeohash
         };
     }
 }
