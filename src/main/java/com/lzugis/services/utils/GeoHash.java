@@ -1,5 +1,15 @@
 package com.lzugis.services.utils;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -225,6 +235,34 @@ public class GeoHash {
         return result;
     }
 
+    public double distance(String geohash1, String geohash2){
+        Map lonlat1 = decode(geohash1),
+            lonlat2 = decode(geohash2);
+        double lat1 = (Double) lonlat1.get("lat"),
+                lon1 = (Double) lonlat1.get("lon");
+        double lat2 = (Double) lonlat2.get("lat"),
+                lon2 = (Double) lonlat2.get("lon");
+        double[] webPoint1 = lonlat2WebMactor(lon1, lat1),
+                webPoint2 = lonlat2WebMactor(lon2, lat2);
+        return Math.sqrt(Math.pow(webPoint1[0]-webPoint2[0], 2d)+Math.pow(webPoint1[1]-webPoint2[1], 2d));
+    };
+
+    public double[] lonlat2WebMactor(double lon, double lat){
+        Point geom =new GeometryFactory().createPoint(new Coordinate(lon, lat));
+        try{
+            CoordinateReferenceSystem crsTarget = CRS.decode("EPSG:3857");
+            // 投影转换
+            MathTransform transform = CRS.findMathTransform(DefaultGeographicCRS.WGS84, crsTarget);
+            Point webPoint = (Point)JTS.transform(geom, transform);
+            return new double[]{webPoint.getX(), webPoint.getY()};
+        }
+        catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         GeoHash geohash = new GeoHash();
         String geoCode = geohash.encode(36.0473987, 103.847232, 0);
@@ -235,6 +273,10 @@ public class GeoHash {
         System.out.println(bounds.toString());
 
         Map neighbours = geohash.neighbours(geoCode);
+
+        double[] webPt = geohash.lonlat2WebMactor(103.847232, 36.0473987);
+        System.out.println(webPt[0]+", "+webPt[1]);
+
         System.out.println(neighbours.toString());
         System.out.println(minLat);
         System.out.println(minLng);
