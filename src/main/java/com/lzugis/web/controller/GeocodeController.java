@@ -130,4 +130,15 @@ public class GeocodeController {
         }
     }
 
+    @RequestMapping(value="geocode/search")
+    public void searchByDistance(double lon, double lat, double distance, HttpServletResponse response){
+        try {
+            List result = geoService.searchByDist(lon, lat, distance);
+            response.setHeader("Content-type", "text/html;charset=UTF-8");
+            JSONArray.writeJSONString(result, response.getWriter());
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }

@@ -1,12 +1,11 @@
 package com.lzugis.services;
 
 import com.lzugis.dao.GeocodeDao;
-import com.lzugis.dao.jdbc.util.AnnotationUtil;
 import com.lzugis.helper.*;
 import com.lzugis.services.model.*;
+import com.lzugis.services.utils.GeoHash;
 import com.lzugis.services.utils.GeocodeUtil;
 import com.lzugis.services.utils.ShpUtil;
-import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONArray;
 import org.opengis.feature.simple.SimpleFeature;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +24,8 @@ public class GeocodeService {
     private GeocodeDao geoDao;
     private static ShpUtil shpUtil;
     private static GeocodeUtil geoUtil;
+    private static GeoHash geoHash;
+
     private static GeocodePolygon polygon;
     private static GeocodePolyline polyline;
     private static GeocodePoints points;
@@ -36,6 +37,8 @@ public class GeocodeService {
         super();
         shpUtil = new ShpUtil();
         geoUtil = new GeocodeUtil();
+        geoHash = new GeoHash();
+
         polygon = new GeocodePolygon();
         polyline = new GeocodePolyline();
         points = new GeocodePoints();
@@ -162,16 +165,35 @@ public class GeocodeService {
         return result;
     }
 
+    public List searchByDist(double lon, double lat, double dist){
+        List list = new ArrayList();
+        int precision = geoHash.effectnum(dist);
+        String strGeohash = geoHash.encode(lat, lon, 0);
+        String filters = "where geohash like '"+strGeohash.substring(0, precision)+"%'";
+        List _list = geoDao.getDataByFilter(points.getTableName(), points.getTableFields(), filters, new Object[]{});
+        for(int i=0;i<_list.size();i++){
+            Map map = (Map)_list.get(i);
+            String _geohash = map.get("geohash").toString();
+            double _dist = geoHash.distance(strGeohash, _geohash);
+            if(_dist<dist)list.add(map);
+        }
+        return list;
+    }
+
     /**
      * 程序主函数，主要处理shp数据的入库
      * @param args
      */
     public static void main(String[] args){
-        new GeocodeService();
+        GeocodeService geoS = new GeocodeService();
+//        geoDao = new GeocodeDao();
         long start = System.currentTimeMillis();
 
-        Map result = geoUtil.getAreaFromLonlat(105.83521, 23.42288, 7 );
-        System.out.println(result.get("areaname").toString());
+//        Map result = geoUtil.getAreaFromLonlat(105.83521, 23.42288, 7 );
+//        System.out.println(result.get("areaname").toString());
+
+        List list = geoS.searchByDist(116.399, 39.969, 5000);
+        System.out.println(JSONArray.toJSONString(list));
 
 //        parseData2Db();
 

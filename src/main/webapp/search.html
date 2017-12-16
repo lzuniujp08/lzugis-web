@@ -1,0 +1,146 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Ol3 wms</title>
+    <link rel="shortcut icon" type="image/x-icon" href="css/img/logo.jpg" />
+    <link rel="stylesheet" type="text/css" href="plugin/ol4/ol.css"/>
+    <style type="text/css">
+        body, #map {
+            border: 0px;
+            margin: 0px;
+            padding: 0px;
+            width: 100%;
+            height: 100%;
+            font-size: 13px;
+        }
+    </style>
+    <script type="text/javascript" src="plugin/ol4/ol.js"></script>
+    <script type="text/javascript" src="plugin/jquery/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript">
+        var map;
+        var radius = 5000;
+        function init() {
+            var vec_w = getTdtLayer("vec_w");
+            var projection = new ol.proj.Projection({
+                code: 'EPSG:3857',
+                units: 'm'
+            });
+
+            var source = new ol.source.Vector({
+                features: []
+            });
+
+            function styleFunc(feature){
+                var type = feature.get("type"),
+                    name = feature.get("name");
+                name = name&&map.getView().getZoom()>12?name:"";
+
+                var imageStyle = new ol.style.Icon({
+                    opacity: 0.75,
+                    src: 'css/img/icon.png'
+                });
+
+                if(type==="poi"){
+                    imageStyle = new ol.style.Circle({
+                        radius: 6,
+                        fill: new ol.style.Fill({
+                            color: "#0000ff"
+                        }),
+                        stroke: new ol.style.Stroke({color: 'white', width: 1})
+                    })
+                }
+
+                return new ol.style.Style({
+                    image: imageStyle,
+                    text: new ol.style.Text({
+                        text: name,
+                        fill: new ol.style.Fill({
+                            color: '#000000'
+                        }),
+                        font:"bold 13px 黑体",
+                        stroke: new ol.style.Stroke({color: 'white', width: 1}),
+                        textAlign:"left",
+                        textBaseline:"bottom",
+                        offsetX:10,
+                        offsetY:2
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: '#ff0000',
+                        width: 2
+                    })
+                });
+            }
+            var vector = new ol.layer.Vector({
+                source: source,
+                style: styleFunc
+            });
+            map = new ol.Map({
+                controls: ol.control.defaults({
+                    attribution: false
+                }),
+                target: 'map',
+                layers: [
+					vec_w,
+                    vector
+                ],
+                view: new ol.View({
+                    projection: projection,
+                    center: ol.proj.transform([104.214, 35.847], 'EPSG:4326', 'EPSG:3857'),
+                    zoom: 4
+                })
+            });
+
+            map.on('click', function(evt) {
+                source.clear();
+                var features = [];
+                var _center = new ol.Feature({
+                    geometry: new ol.geom.Point(evt.coordinate)
+                });
+                var _circle = new ol.Feature({
+                    geometry: new ol.geom.Circle(evt.coordinate, radius)
+                });
+
+                var _lonlat = ol.proj.transform(
+                    evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+
+                $.get("geocode/search",{
+                    lon:_lonlat[0],
+                    lat:_lonlat[1],
+                    distance: radius
+                }, function (result) {
+                    result = JSON.parse(result);
+                    for(var i=0;i<result.length;i++){
+                        var _pt = ol.proj.transform([result[i].x, result[i].y], 'EPSG:4326', 'EPSG:3857');
+                        features.push(new ol.Feature({
+                            geometry: new ol.geom.Point(_pt),
+                            type: "poi",
+                            name: result[i].poiname
+                        }));
+                    }
+                    features.push(_circle);
+                    features.push(_center);
+                    source.addFeatures(features);
+                })
+            });
+        }
+        function getTdtLayer(lyr) {
+            var url = "http://t0.tianditu.com/DataServer?T=" + lyr + "&X={x}&Y={y}&L={z}";
+            var layer = new ol.layer.Tile({
+                source: new ol.source.XYZ({
+                    url: url
+                })
+            });
+            return layer;
+        }
+    </script>
+</head>
+<body onLoad="init()">
+<div id="map">
+    <div id="popup" class="ol-popup">
+        <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+        <div id="popup-title" class="popup-title"></div>
+        <div id="popup-content" class="popup-content"></div>
+    </div>
+</div>
+</body>
+</html>
