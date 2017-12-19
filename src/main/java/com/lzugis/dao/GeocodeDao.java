@@ -120,7 +120,6 @@ public class GeocodeDao extends CommonDao {
     public int insert(String table, String[] fields, String unionsql){
         StringBuffer sql = new StringBuffer();
         sql.append("insert into "+table+" (");
-        String val = "";
         for(int i=0;i<fields.length;i++){
             sql.append(fields[i]);
             if(i!=fields.length-1){

@@ -1,13 +1,21 @@
 package com.lzugis.helper;
 
+import com.amazonaws.util.json.JSONException;
+import com.amazonaws.util.json.JSONObject;
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
 import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
+import org.apache.poi.xssf.usermodel.helpers.RichTextStringHelper;
 
 import java.io.*;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by admin on 2017/11/20.
  */
@@ -66,6 +74,65 @@ public class CommonMethod {
             e.printStackTrace();
         }
     }
+
+    public String getUrlContent(String url){
+        String content = "";
+        InputStream is = null;
+        try {
+            is = new URL(url).openStream();
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+            StringBuilder sb = new StringBuilder();
+            int cp;
+            while ((cp = rd.read()) != -1) {
+                sb.append((char) cp);
+            }
+            content = sb.toString();
+            is.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return content;
+    }
+
+    public JSONObject getUrlJSON(String url) {
+        JSONObject json = null;
+        InputStream is = null;
+        try {
+            String strJson = getUrlContent(url);
+            json = new JSONObject(strJson);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return json;
+    }
+
+    public Map geoCode(String keyword){
+        Map result = new HashMap();
+        JSONObject json = null;
+        try {
+            StringBuffer url = new StringBuffer();
+            url.append("http://api.tianditu.com/apiserver/ajaxproxy?proxyReqUrl=http://api.tianditu.com/search?postStr=");
+            Map para = new HashMap();
+            para.put("keyWord", keyword);
+            para.put("level", "4");
+            para.put("mapBound", "63.10547,22.99885,163.125,50.56928");
+            para.put("queryType", "2");
+            para.put("start", "0");
+            para.put("count", "10");
+            url.append(org.json.simple.JSONObject.toJSONString(para));
+            url.append("&type=query");
+            String content = getUrlContent(url.toString());
+            content = content.substring(19, content.length() - 1);
+            json = new JSONObject(content);
+            System.out.println(content);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return result;
+    }
+
     /**
      * 将汉字转换为全拼
      *

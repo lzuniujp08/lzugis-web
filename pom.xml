@@ -161,6 +161,12 @@
             <artifactId>jts</artifactId>
             <version>1.13</version>
         </dependency>
+
+        <dependency>
+            <groupId>edu.ucar</groupId>
+            <artifactId>netcdfAll</artifactId>
+            <version>4.6.8</version>
+        </dependency>
     </dependencies>
 
     <repositories>
