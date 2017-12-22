@@ -75,4 +75,10 @@ public class TestController {
         list.add(poi);
         return list;
     }
+
+    @RequestMapping({"/dem/query"})
+    @ResponseBody
+    public List addGeoPOI(String points){
+        return testService.getLineDem(points);
+    }
 }
