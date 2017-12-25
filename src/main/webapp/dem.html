@@ -13,58 +13,19 @@
             height: 100%;
             font-size: 13px;
         }
-        .ol-popup {
-            display: none;
+        #chart{
             position: absolute;
-            background-color: white;
-            -moz-box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-            -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
-            filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+            bottom: 0;
+            right: 0;
             border: 1px solid #cccccc;
-            bottom: 12px;
-            left: -100px;
-            width: 200px;
-        }
-        .ol-popup:after, .ol-popup:before {
-            top: 100%;
-            border: solid transparent;
-            content: " ";
-            height: 0;
-            width: 0;
-            position: absolute;
-            pointer-events: none;
-        }
-        .ol-popup:after {
-            border-top-color: white;
-            border-width: 10px;
-            left: 100px;
-            margin-left: -10px;
-        }
-        .ol-popup:before {
-            border-top-color: #cccccc;
-            border-width: 11px;
-            left: 100px;
-            margin-left: -11px;
-        }
-        .popup-title{
-            font-weight: bold;
-            border-bottom:1px solid #cccccc;
-            padding: 5px 8px;
-        }
-        .popup-content{
-            padding: 5px 8px;
-        }
-        .ol-popup-closer {
-            text-decoration: none;
-            position: absolute;
-            top: 6px;
-            right: 6px;
-        }
-        .ol-popup-closer:after {
-            content: "×";
+            background: white;
+            z-index: 9;
+            width: 400px;
+            height: 240px;
         }
     </style>
     <script type="text/javascript" src="plugin/ol4/ol.js"></script>
+    <script type="text/javascript" src="plugin/echart3/echarts.min.js"></script>
     <script type="text/javascript" src="plugin/jquery/jquery-3.1.1.min.js"></script>
     <script type="text/javascript">
         var map;
@@ -118,13 +79,70 @@
             var draw = new ol.interaction.Draw({
                 source: source,
                 type: "LineString",
-                freehand: true//是否手绘
+                freehand: false//是否手绘
             });
             map.addInteraction(draw);
             draw.setActive(false);
             draw.on("drawend", function (evt) {
                 draw.setActive(false);
-                console.log(JSON.stringify(evt.feature.getGeometry().getCoordinates()));
+                var coords = evt.feature.getGeometry().getCoordinates(),
+                    points = [];
+                for(var i=0;i<coords.length;i++){
+                    points.push(coords[i].join(","));
+                }
+                $.get("dem/query", {points:points.join(";")}, function (result) {
+                    console.log(result);
+                    var _x = [],
+                        _v = [];
+                    for(var i=0;i<result.length;i++){
+                        _x.push("point"+i);
+                        _v.push(result[i].dem);
+                    }
+                    var dom = document.getElementById("chart");
+                    var myChart = echarts.init(dom);
+                    var option = {
+                        title: {
+                            text: '高程图'
+                        },
+                        backgroundColor:"rgba(255, 255, 255, .8)",
+                        grid: {
+                            left: '5%',
+                            right: '4%',
+                            bottom: '1%',
+                            containLabel: true
+                        },
+                        xAxis : [
+                            {
+                                show:false,
+                                type : 'category',
+                                boundaryGap : false,
+                                data : _x
+                            }
+                        ],
+                        yAxis : [
+                            {
+                                type : 'value',
+                                offset:15
+                            }
+                        ],
+                        series : [
+                            {
+                                name: 'DEM',
+                                type: 'line',
+                                stack: '总量',
+                                label: {
+                                    normal: {
+                                        show: true,
+                                        position: 'top'
+                                    }
+                                },
+                                areaStyle: {normal: {}},
+                                data: _v
+                            }
+                        ]
+                    };
+                    myChart.setOption(option);
+                });
             });
             $("#draw").on("click", function(){
                 draw.setActive(true);
@@ -134,7 +152,7 @@
 </head>
 <body onLoad="init()">
 <button id="draw" style="position: absolute;top:10px;right: 10px;z-index: 9;">draw</button>
-<div id="map">
-</div>
+<div id="map"></div>
+<div id="chart"></div>
 </body>
 </html>
