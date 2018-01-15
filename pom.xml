@@ -132,8 +132,15 @@
             <version>2.5.0</version>
         </dependency>
 
-        <!--geotools-->
+        <!--WebSocket-->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>7.0</version>
+            <scope>provided</scope>
+        </dependency>
 
+        <!--geotools-->
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-swing</artifactId>
