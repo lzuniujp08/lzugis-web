@@ -8,14 +8,9 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/**
- * 推送即将要处理完成的受理单给处理人
- */
 @RequestMapping("/websocket")
 public class WebsocketEndPoint extends TextWebSocketHandler {
     private Timer timer;
-    private static int imgIndex = 0;
-    private final String[] imgList = {"1.png","2.png","3.png","4.png","5.png","6.png"};
 
     @Override
     protected void handleTextMessage(WebSocketSession session,
@@ -38,6 +33,8 @@ public class WebsocketEndPoint extends TextWebSocketHandler {
 
     class OrderTimeTask extends TimerTask{
         private WebSocketSession session;
+        private int imgIndex = 0;
+        private final String[] imgList = {"1.png","2.png","3.png","4.png","5.png","6.png"};
 
         public OrderTimeTask(WebSocketSession session){
             this.session = session;
