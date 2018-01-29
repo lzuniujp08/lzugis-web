@@ -1,0 +1,114 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>shp文件</title>
+    <link rel="stylesheet" href="//js.arcgis.com/3.21/esri/css/esri.css">
+    <link href="plugin/bootstrap/css/bootstrap.css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="plugin/uploadify/uploadify.css">
+    <style type="text/css">
+        body, #map {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-size: 13px;
+            overflow: hidden;
+        }
+        .map-tools{
+            position: absolute;
+            top:15px;
+            right: 15px;
+            z-index: 99;
+            background: white;
+            text-align: center;
+            padding: 10px 10px 0 10px;
+        }
+        .modal-dialog {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            text-align: center;
+        }
+        .modal-dialog img {
+            margin-top: 23%;
+        }
+    </style>
+    <script src="//js.arcgis.com/3.21/"></script>
+    <script type="text/javascript" src="plugin/jquery/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="js/jsonConverters.js"></script>
+    <script src="plugin/bootstrap/js/bootstrap.js"></script>
+    <script src="plugin/uploadify/jquery.uploadify.min.js"></script>
+
+    <script type="text/javascript">
+        var map;
+        require(["esri/map",
+            "esri/layers/GraphicsLayer",
+            "esri/symbols/SimpleMarkerSymbol",
+            "esri/symbols/SimpleLineSymbol",
+            "esri/renderers/SimpleRenderer",
+            "esri/Color",
+            "esri/geometry/Point",
+            "esri/graphic",
+            "dojo/domReady!"], function(Map,GraphicsLayer,
+                                        SimpleMarkerSymbol,
+                                        SimpleLineSymbol,
+                                        SimpleRenderer,
+                                        Color, Point, Graphic) {
+            map = new Map("map", {
+                basemap: "topo",
+                center: [106.59992650103331, 35.369016087503155], // longitude, latitude
+                zoom: 4
+            });
+            var gLayer = new GraphicsLayer();
+            map.addLayer(gLayer);
+
+            $('#file_upload').uploadify({
+                'formData': {},
+                'buttonText': '选择shp文件',
+                'swf': 'plugin/uploadify/uploadify.swf',
+                'uploader': 'shp-upload',
+                'fileTypeExts': '*.zip',
+                "onUploadSuccess": function (file, data, response) {
+                    var data = JSON.parse(data);
+                    console.log(data);
+                    addGeojson(JSON.parse(data.geojson))
+                },
+                "onUploadError": function (file, errorCode, errorMsg,
+                                           errorString) {
+                    alert('The file ' + file.name
+                        + ' could not be uploaded: ' + errorString);
+                }
+            });
+
+            function addGeojson(geojson){
+                var jsonf = geoJsonConverter();
+                var json = jsonf.toEsri(geojson);
+                var features = json.features;
+                for(var i=0;i<features.length;i++){
+                    var feature = features[i];
+                    feature.symbol = {"color":[0,0,255,200],
+                        "size":12,"angle":0,"xoffset":0,"yoffset":0,"type":"esriSMS","style":"esriSMSCircle",
+                        "outline":{"color":[0,0,0,255],"width":1,"type":"esriSLS","style":"esriSLSSolid"}};
+                    var graphic  = new Graphic(feature);
+                    gLayer.add(graphic);
+                }
+            }
+        });
+    </script>
+</head>
+<body>
+<!-- loading -->
+<div class="modal fade" id="loading" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop='static'>
+    <div class="modal-dialog" role="document">
+        <img src="css/img/loading.gif">
+    </div>
+</div>
+<div id="map">
+    <div class="map-tools">
+        <form action="" method="post" id="shp-upload" enctype="multipart/form-data">
+            <input id="file_upload" name="file_upload" type="file" multiple="false">
+        </form>
+    </div>
+</div>
+</body>
+</html>
