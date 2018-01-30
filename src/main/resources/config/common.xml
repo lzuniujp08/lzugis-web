@@ -2,7 +2,8 @@
 <sys>
     <database>
         <driverclassname>org.postgresql.Driver</driverclassname>
-        <url>jdbc:postgresql://localhost:5432/lzugis</url>
+        <url>jdbc:postgresql://10.16.48.185:5432/jykd-railway</url>
+        <!--<url>jdbc:postgresql://localhost:5432/lzugis</url>-->
         <username>postgres</username>
         <password>root</password>
     </database>
@@ -21,7 +22,7 @@
     <geocode>
         <!--<dbpath>/Users/lzugis/Documents/geocode.s3db</dbpath>-->
         <dbpath>D:/BaiduNetdiskDownload/geocode.s3db</dbpath>
-        <shproot>D:/lzugis/code/lzugis-web/src/main/resources/geocode/shp/</shproot>
+        <shproot>D:/lzugis/code/lzugis-web/src/main/resources/geocode/</shproot>
         <savepath>D:/BaiduNetdiskDownload/</savepath>
     </geocode>
 </sys>

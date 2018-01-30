@@ -98,7 +98,7 @@
         'fileTypeExts': '*.zip',
         "onUploadSuccess": function (file, data, response) {
             var data = JSON.parse(data);
-            addGeojson(JSON.parse(data.geojson))
+            if(data.status==="200") addGeojson(data.url);
         },
         "onUploadError": function (file, errorCode, errorMsg,
                                    errorString) {
@@ -108,14 +108,16 @@
         }
     });
 
-    function addGeojson(geojson){
-        var features = (new ol.format.GeoJSON()).readFeatures(geojson);
-        for(var i=0, l=features.length;i<l;i++){
-            features[i].getGeometry().transform('EPSG:4326', map.getView().getProjection());
-        }
-        var source = new ol.source.Vector();
-        source.addFeatures(features);
-        vector.setSource(source);
+    function addGeojson(url){
+        $.get(url, function(geojson){
+            var features = (new ol.format.GeoJSON()).readFeatures(geojson);
+            for(var i=0, l=features.length;i<l;i++){
+                features[i].getGeometry().transform('EPSG:4326', map.getView().getProjection());
+            }
+            var source = new ol.source.Vector();
+            source.addFeatures(features);
+            vector.setSource(source);
+        });
     }
 
     function getTdtLayer(lyr) {

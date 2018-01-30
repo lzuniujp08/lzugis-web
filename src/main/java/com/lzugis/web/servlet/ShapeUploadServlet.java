@@ -8,6 +8,7 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.json.simple.JSONObject;
+import sun.text.resources.iw.FormatData_iw_IL;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -26,7 +27,7 @@ import java.util.Map;
 @WebServlet(description = "shp file upload", urlPatterns =  {"/shp-upload"})
 public class ShapeUploadServlet extends HttpServlet {
 
-    private String rootPath = "";
+    private String rootPath = "", webPath = "";
     private ZipUtil zipUtil;
     private ShpFormatUtil shpUtil;
     private CommonMethod cm;
@@ -44,6 +45,7 @@ public class ShapeUploadServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        webPath = getServletContext().getRealPath("/");
         request.setCharacterEncoding("utf-8");
         response.setCharacterEncoding("utf-8");
         //1、创建一个DiskFileItemFactory工厂
@@ -75,6 +77,7 @@ public class ShapeUploadServlet extends HttpServlet {
                 // 若是文件域则把文件保存到 e:\\files 目录下.
                 else {
                     String fileName = item.getName();
+                    String _fileName = fileName.substring(0, fileName.lastIndexOf("."));
                     long sizeInBytes = item.getSize();
 //                    System.out.println(fileName);
 //                    System.out.println(sizeInBytes);
@@ -90,11 +93,11 @@ public class ShapeUploadServlet extends HttpServlet {
                     out.close();
                     in.close();
                     String shpPath = zipUtil.unZipFiles(fileName, rootPath);
-                    System.out.println("shp path"+shpPath);
                     StringBuffer json = shpUtil.shp2Json(shpPath);
+                    String jsonPath = "out"+ File.separator+_fileName+".json";
+                    cm.append2File(webPath+File.separator+jsonPath, json.toString(), true);
                     result.put("status", "200");
-                    result.put("geojson", json.toString());
-//                    cm.append2File(rootPath + "json.json", json.toString());
+                    result.put("url", jsonPath);
                     JSONObject.writeJSONString(result, response.getWriter());
                 }
             }

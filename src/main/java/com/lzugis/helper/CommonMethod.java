@@ -50,17 +50,18 @@ public class CommonMethod {
         }
         return sb.toString();
     }
-    public void append2File(String file, String content) {
+    public void append2File(String file, String content, boolean isclear) {
+        File f = new File(file);
+        if(isclear && f.exists()){
+            f.delete();
+        }
         FileWriter fw = null;
         try {
-            //如果文件存在，则追加内容；如果文件不存在，则创建文件
-            File f = new File(file);
             fw = new FileWriter(f, true);
         }
         catch (IOException e) {
             e.printStackTrace();
         }
-
         PrintWriter pw = new PrintWriter(fw);
         pw.println(content);
         pw.flush();
@@ -201,5 +202,12 @@ public class CommonMethod {
             strBuf.append(Integer.toHexString(bGBK[i] & 0xff));
         }
         return strBuf.toString();
+    }
+
+    public static void main(String[] args){
+        File file = new File("d:/province.zip");
+        String fileName = file.getName();
+        fileName = fileName.substring(0, fileName.lastIndexOf("."));
+        System.out.println("方法一：fileName = " + fileName);
     }
 }

@@ -56,7 +56,7 @@ public class RailInfo {
                     sb.append("\r\n"+raininfos[2]+","+raininfos[3]+","+raininfos[8]+","+raininfos[9]+","+raininfos[10]);
                 }
             }
-            cm.append2File(railPath, sb.toString());
+            cm.append2File(railPath, sb.toString(), true);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -109,9 +109,9 @@ public class RailInfo {
         String stopsPath = rail.filePath+"stops.csv";
         for(int i=0;i<list.size();i++){
             Map map = (Map)list.get(i);
-            if(i>0)rail.cm.append2File(stopsPath, "");
+            if(i>0)rail.cm.append2File(stopsPath, "", true);
             String rainStops = rail.getRainInfo(map);
-            rail.cm.append2File(stopsPath, rainStops);
+            rail.cm.append2File(stopsPath, rainStops, false);
         }
         System.out.println("success");
     }

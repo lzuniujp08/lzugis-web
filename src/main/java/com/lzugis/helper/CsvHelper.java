@@ -28,6 +28,6 @@ public class CsvHelper {
             csvContent.append("\r\n");
         }
         //输出CSV
-        cm.append2File(csvPath, csvContent.toString());
+        cm.append2File(csvPath, csvContent.toString(), true);
     }
 }
