@@ -3,7 +3,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>shp文件</title>
     <link rel="stylesheet" href="//js.arcgis.com/3.21/esri/css/esri.css">
-    <link href="plugin/bootstrap/css/bootstrap.css" rel="stylesheet"/>
     <link rel="stylesheet" type="text/css" href="plugin/uploadify/uploadify.css">
     <style type="text/css">
         body, #map {
@@ -33,16 +32,25 @@
             margin-top: 23%;
         }
     </style>
+    <script type="text/javascript">
+        dojoConfig = {
+            parseOnLoad: true,
+            packages: [{
+                name: 'extend',
+                location: this.location.pathname.replace(/\/[^/]+$/, "")+"/js"
+            }]
+        };
+    </script>
     <script src="//js.arcgis.com/3.21/"></script>
     <script type="text/javascript" src="plugin/jquery/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="js/jsonConverters.js"></script>
-    <script src="plugin/bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript" src="js/vendor/terraformer/terraformer.min.js"></script>
+    <script type="text/javascript" src="js/vendor/terraformer-arcgis-parser/terraformer-arcgis-parser.min.js"></script>
     <script src="plugin/uploadify/jquery.uploadify.min.js"></script>
 
     <script type="text/javascript">
         var map;
         require(["esri/map",
-            "esri/layers/GraphicsLayer",
+            "extend/geojsonlayer",
             "esri/symbols/SimpleMarkerSymbol",
             "esri/symbols/SimpleLineSymbol",
             "esri/symbols/SimpleFillSymbol",
@@ -50,7 +58,7 @@
             "esri/Color",
             "esri/geometry/Point",
             "esri/graphic",
-            "dojo/domReady!"], function(Map,GraphicsLayer,
+            "dojo/domReady!"], function(Map,GeoJsonLayer,
                                         SimpleMarkerSymbol,
                                         SimpleLineSymbol,
                                         SimpleFillSymbol,
@@ -61,8 +69,6 @@
                 center: [106.59992650103331, 35.369016087503155], // longitude, latitude
                 zoom: 4
             });
-            var gLayer = new GraphicsLayer();
-            map.addLayer(gLayer);
 
             $('#file_upload').uploadify({
                 'formData': {},
@@ -82,18 +88,16 @@
             });
 
             function addGeojson(url){
-                var jsonf = geoJsonConverter();
-                $.get(url, function(geojson){
-                    var type = geojson.features[0].geometry.type;
-                    var json = jsonf.toEsri(geojson);
-                    var features = json.features;
-                    for(var i=0;i<features.length;i++){
-                        var feature = features[i];
-                        feature.symbol = getSymbol(type);
-                        var graphic  = new Graphic(feature);
-                        gLayer.add(graphic);
-                    }
+                // Create the layer
+                var geoJsonLayer = new GeoJsonLayer({
+                    url: url
                 });
+                // Zoom to layer
+                geoJsonLayer.on("update-end", function (e) {
+                    map.setExtent(e.target.extent.expand(1.2));
+                });
+                // Add to map
+                map.addLayer(geoJsonLayer);
             }
             
             function getSymbol(type) {
@@ -110,12 +114,6 @@
     </script>
 </head>
 <body>
-<!-- loading -->
-<div class="modal fade" id="loading" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop='static'>
-    <div class="modal-dialog" role="document">
-        <img src="css/img/loading.gif">
-    </div>
-</div>
 <div id="map">
     <div class="map-tools">
         <form action="" method="post" id="shp-upload" enctype="multipart/form-data">
