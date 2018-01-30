@@ -97,7 +97,7 @@
         'uploader': 'shp-upload',
         'fileTypeExts': '*.zip',
         "onUploadSuccess": function (file, data, response) {
-            var data = JSON.parse(data);
+            data = JSON.parse(data);
             if(data.status==="200") addGeojson(data.url);
         },
         "onUploadError": function (file, errorCode, errorMsg,

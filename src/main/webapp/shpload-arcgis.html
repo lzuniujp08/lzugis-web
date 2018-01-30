@@ -45,6 +45,7 @@
             "esri/layers/GraphicsLayer",
             "esri/symbols/SimpleMarkerSymbol",
             "esri/symbols/SimpleLineSymbol",
+            "esri/symbols/SimpleFillSymbol",
             "esri/renderers/SimpleRenderer",
             "esri/Color",
             "esri/geometry/Point",
@@ -52,6 +53,7 @@
             "dojo/domReady!"], function(Map,GraphicsLayer,
                                         SimpleMarkerSymbol,
                                         SimpleLineSymbol,
+                                        SimpleFillSymbol,
                                         SimpleRenderer,
                                         Color, Point, Graphic) {
             map = new Map("map", {
@@ -69,9 +71,8 @@
                 'uploader': 'shp-upload',
                 'fileTypeExts': '*.zip',
                 "onUploadSuccess": function (file, data, response) {
-                    var data = JSON.parse(data);
-                    console.log(data);
-                    addGeojson(JSON.parse(data.geojson))
+                    data = JSON.parse(data);
+                    if(data.status==="200") addGeojson(data.url);
                 },
                 "onUploadError": function (file, errorCode, errorMsg,
                                            errorString) {
@@ -80,17 +81,29 @@
                 }
             });
 
-            function addGeojson(geojson){
+            function addGeojson(url){
                 var jsonf = geoJsonConverter();
-                var json = jsonf.toEsri(geojson);
-                var features = json.features;
-                for(var i=0;i<features.length;i++){
-                    var feature = features[i];
-                    feature.symbol = {"color":[0,0,255,200],
-                        "size":12,"angle":0,"xoffset":0,"yoffset":0,"type":"esriSMS","style":"esriSMSCircle",
-                        "outline":{"color":[0,0,0,255],"width":1,"type":"esriSLS","style":"esriSLSSolid"}};
-                    var graphic  = new Graphic(feature);
-                    gLayer.add(graphic);
+                $.get(url, function(geojson){
+                    var type = geojson.features[0].geometry.type;
+                    var json = jsonf.toEsri(geojson);
+                    var features = json.features;
+                    for(var i=0;i<features.length;i++){
+                        var feature = features[i];
+                        feature.symbol = getSymbol(type);
+                        var graphic  = new Graphic(feature);
+                        gLayer.add(graphic);
+                    }
+                });
+            }
+            
+            function getSymbol(type) {
+                type = type.toLowerCase();
+                if(type.indexOf("polygon")>0){
+                    return new SimpleFillSymbol().toJson();
+                }else if(type.indexOf("polyline")>0){
+                    return new SimpleLineSymbol().toJson();
+                }else{
+                    return new SimpleMarkerSymbol().toJson();
                 }
             }
         });
