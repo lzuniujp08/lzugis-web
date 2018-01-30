@@ -3,7 +3,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>shp文件</title>
     <link rel="stylesheet" href="//openlayers.org/en/v4.1.1/css/ol.css" type="text/css">
-    <link rel="stylesheet" type="text/css" href="plugin/uploadify/uploadify.css">
+    <link rel="stylesheet" type="text/css" href="plugin/uploader/jquery.dm-uploader.css">
+    <link rel="stylesheet" type="text/css" href="plugin/bootstrap/css/bootstrap.css">
     <style type="text/css">
         body, #map {
             margin: 0;
@@ -13,37 +14,72 @@
             font-size: 13px;
             overflow: hidden;
         }
-        .map-tools{
-            position: absolute;
-            top:15px;
-            right: 15px;
-            z-index: 99;
-            background: white;
-            text-align: center;
-            padding: 10px 10px 0 10px;
-        }
         .modal-dialog {
             height: 100%;
             width: 100%;
             margin: 0;
             text-align: center;
         }
-        .modal-dialog img {
-            margin-top: 23%;
+        .progress{
+            width: 40%;
+            height: 20px;
+            position: absolute;
+            top:calc(50% - 10px);
+            left: 30%;
+        }
+        #progress{
+            height: 100%;
+            background: red;
+            width: 0;
+        }
+        .dm-uploader{
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 200px;
+            height: 100px;
+            border: 1px solid #cccccc;
+            box-shadow: 1px 1px 2px #ccc;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+            padding: 10px;
+            z-index: 99;
+            background: white;
+        }
+        .dm-uploader.active{
+            border: 1px solid #ff0000;
+        }
+        .dm-uploader h4{
+            margin: 0 0 10px 0;
+            padding: 8px 0;
         }
     </style>
 </head>
 <body>
+<!-- loading -->
+<div class="modal fade" id="loading" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop='static'>
+    <div class="modal-dialog" role="document">
+        <div class="progress">
+            <div id="progress"></div>
+        </div>
+    </div>
+</div>
 <div id="map">
-    <div class="map-tools">
-        <form action="" method="post" id="shp-upload" enctype="multipart/form-data">
-            <input id="file_upload" name="file_upload" type="file" multiple="false">
-        </form>
+    <div class="row">
+        <div id="drag-and-drop-zone" class="dm-uploader">
+            <h4 class="mb-5 mt-5 text-muted">选择或拖入文件：</h4>
+            <div class="btn btn-primary btn-block mb-5">
+                <span>选择上传文件</span>
+                <input type="file" title='Click to add Files' />
+            </div>
+        </div>
     </div>
 </div>
 <script src="//openlayers.org/en/v4.1.1/build/ol.js"></script>
 <script type="text/javascript" src="plugin/jquery/jquery-3.1.1.min.js"></script>
-<script src="plugin/uploadify/jquery.uploadify.min.js"></script>
+<script src="plugin/uploader/jquery.dm-uploader.js"></script>
+<script src="plugin/bootstrap/js/bootstrap.js"></script>
 <script type="text/javascript">
     var map;
     var vec_w = getTdtLayer("vec_w"),
@@ -52,7 +88,7 @@
         features: []
     });
     var vector = new ol.layer.Vector({
-        source: null,
+        source: source,
         style:new ol.style.Style({
             stroke: new ol.style.Stroke({
                 color: '#ffcc33',
@@ -87,26 +123,36 @@
         })
     });
 
-    $('#file_upload').uploadify({
-        'formData': {},
-        'successTimeout' : 600,
-        'sizeLimit': 1024*1024,//限制大小
-        'removeCompleted':true,
-        'buttonText': '选择shp文件',
-        'swf': 'plugin/uploadify/uploadify.swf',
-        'uploader': 'shp-upload',
-        'fileTypeExts': '*.zip',
-        "onUploadSuccess": function (file, data, response) {
+    $('#drag-and-drop-zone').dmUploader({
+        url: 'shp-upload',
+        maxFileSize: 3000000,
+        extFilter: ["zip"],
+        onBeforeUpload: function(id){
+            $('#loading').modal('show');
+        },
+        onDragEnter: function () {
+            $("#drag-and-drop-zone").addClass("active");
+        },
+        onDragLeave: function () {
+            $("#drag-and-drop-zone").removeClass("active");
+        },
+        onUploadComplete: function () {
+            $('#loading').modal('hide');
+        },
+        onNewFile: function(id, file){
+//            console.log(file);
+        },
+        onUploadSuccess: function(id, data){
             data = JSON.parse(data);
             if(data.status==="200") addGeojson(data.url);
         },
-        "onUploadError": function (file, errorCode, errorMsg,
-                                   errorString) {
-            console.log(errorCode);
-            console.log(errorMsg);
-            console.log(errorString);
+        onUploadError: function(id, xhr, status, message){
+            console.log(message);
+        },
+        onUploadProgress: function (id, percent) {
+            $("#progress").css("width", percent+"%");
         }
-    });
+    })
 
     function addGeojson(url){
         $.get(url, function(geojson){
@@ -114,9 +160,7 @@
             for(var i=0, l=features.length;i<l;i++){
                 features[i].getGeometry().transform('EPSG:4326', map.getView().getProjection());
             }
-            var source = new ol.source.Vector();
             source.addFeatures(features);
-            vector.setSource(source);
         });
     }
 
