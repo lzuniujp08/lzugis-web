@@ -1,5 +1,6 @@
 package com.lzugis.web.servlet;
 
+import com.lzugis.helper.CommonMethod;
 import com.lzugis.services.utils.ShpFormatUtil;
 import com.lzugis.services.utils.ZipUtil;
 import org.apache.commons.fileupload.FileItem;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,12 +29,14 @@ public class FileUploadServlet extends HttpServlet {
     private String rootPath = "";
     private ZipUtil zipUtil;
     private ShpFormatUtil shpUtil;
+    private CommonMethod cm;
 
     public FileUploadServlet() {
         super();
         rootPath = "D:\\shppath\\";
         zipUtil = new ZipUtil();
         shpUtil = new ShpFormatUtil();
+        cm = new CommonMethod();
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -46,6 +50,10 @@ public class FileUploadServlet extends HttpServlet {
         DiskFileItemFactory factory = new DiskFileItemFactory();
         //2、创建一个文件上传解析器
         ServletFileUpload upload = new ServletFileUpload(factory);
+        //限制单个文件大小为1M
+        upload.setFileSizeMax(1024*1024);
+        //限制整个表单大小为1G
+        upload.setSizeMax(1024*1024*1024);
         //解决上传文件名的中文乱码
         upload.setHeaderEncoding("UTF-8");
         factory.setSizeThreshold(1024 * 500);//设置内存的临界值为500K
@@ -86,6 +94,7 @@ public class FileUploadServlet extends HttpServlet {
                     StringBuffer json = shpUtil.shp2Json(shpPath);
                     result.put("status", "200");
                     result.put("geojson", json.toString());
+//                    cm.append2File(rootPath + "json.json", json.toString());
                     JSONObject.writeJSONString(result, response.getWriter());
                 }
             }

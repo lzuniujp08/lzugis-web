@@ -1,0 +1,132 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>shp文件</title>
+    <link rel="stylesheet" href="//openlayers.org/en/v4.1.1/css/ol.css" type="text/css">
+    <link rel="stylesheet" type="text/css" href="plugin/uploadify/uploadify.css">
+    <style type="text/css">
+        body, #map {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-size: 13px;
+            overflow: hidden;
+        }
+        .map-tools{
+            position: absolute;
+            top:15px;
+            right: 15px;
+            z-index: 99;
+            background: white;
+            text-align: center;
+            padding: 10px 10px 0 10px;
+        }
+        .modal-dialog {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            text-align: center;
+        }
+        .modal-dialog img {
+            margin-top: 23%;
+        }
+    </style>
+</head>
+<body>
+<div id="map">
+    <div class="map-tools">
+        <form action="" method="post" id="shp-upload" enctype="multipart/form-data">
+            <input id="file_upload" name="file_upload" type="file" multiple="false">
+        </form>
+    </div>
+</div>
+<script src="//openlayers.org/en/v4.1.1/build/ol.js"></script>
+<script type="text/javascript" src="plugin/jquery/jquery-3.1.1.min.js"></script>
+<script src="plugin/uploadify/jquery.uploadify.min.js"></script>
+<script type="text/javascript">
+    var map;
+    var vec_w = getTdtLayer("vec_w"),
+        cva_w = getTdtLayer("cva_w");
+    var source = new ol.source.Vector({
+        features: []
+    });
+    var vector = new ol.layer.Vector({
+        source: null,
+        style:new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: '#ffcc33',
+                width: 3,
+                lineJoin: 'round',
+                lineDash:[3,5]
+            }),
+            fill: new ol.style.Fill({
+                color: 'rgba(255, 0, 0, 0.2)'
+            }),
+            image: new ol.style.Circle({
+                radius: 6,
+                fill: new ol.style.Fill({
+                    color: '#3400ff'
+                })
+            })
+        })
+    });
+    map = new ol.Map({
+        controls: ol.control.defaults({
+            attribution: false
+        }),
+        target: 'map',
+        layers: [
+            vec_w,
+            cva_w,
+            vector
+        ],
+        view: new ol.View({
+            center: ol.proj.transform([104.214, 35.847], 'EPSG:4326', 'EPSG:3857'),
+            zoom: 4
+        })
+    });
+
+    $('#file_upload').uploadify({
+        'formData': {},
+        'successTimeout' : 600,
+        'sizeLimit': 1024*1024,//限制大小
+        'removeCompleted':true,
+        'buttonText': '选择shp文件',
+        'swf': 'plugin/uploadify/uploadify.swf',
+        'uploader': 'shp-upload',
+        'fileTypeExts': '*.zip',
+        "onUploadSuccess": function (file, data, response) {
+            var data = JSON.parse(data);
+            addGeojson(JSON.parse(data.geojson))
+        },
+        "onUploadError": function (file, errorCode, errorMsg,
+                                   errorString) {
+            console.log(errorCode);
+            console.log(errorMsg);
+            console.log(errorString);
+        }
+    });
+
+    function addGeojson(geojson){
+        var features = (new ol.format.GeoJSON()).readFeatures(geojson);
+        for(var i=0, l=features.length;i<l;i++){
+            features[i].getGeometry().transform('EPSG:4326', map.getView().getProjection());
+        }
+        var source = new ol.source.Vector();
+        source.addFeatures(features);
+        vector.setSource(source);
+    }
+
+    function getTdtLayer(lyr) {
+        var url = "http://t0.tianditu.com/DataServer?T=" + lyr + "&X={x}&Y={y}&L={z}";
+        var layer = new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                url: url
+            })
+        });
+        return layer;
+    }
+</script>
+</body>
+</html>
