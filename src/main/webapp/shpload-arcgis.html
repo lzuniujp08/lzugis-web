@@ -51,19 +51,7 @@
         var map;
         require(["esri/map",
             "extend/geojsonlayer",
-            "esri/symbols/SimpleMarkerSymbol",
-            "esri/symbols/SimpleLineSymbol",
-            "esri/symbols/SimpleFillSymbol",
-            "esri/renderers/SimpleRenderer",
-            "esri/Color",
-            "esri/geometry/Point",
-            "esri/graphic",
-            "dojo/domReady!"], function(Map,GeoJsonLayer,
-                                        SimpleMarkerSymbol,
-                                        SimpleLineSymbol,
-                                        SimpleFillSymbol,
-                                        SimpleRenderer,
-                                        Color, Point, Graphic) {
+            "dojo/domReady!"], function(Map,GeoJsonLayer) {
             map = new Map("map", {
                 basemap: "topo",
                 center: [106.59992650103331, 35.369016087503155], // longitude, latitude
@@ -98,17 +86,6 @@
                 });
                 // Add to map
                 map.addLayer(geoJsonLayer);
-            }
-            
-            function getSymbol(type) {
-                type = type.toLowerCase();
-                if(type.indexOf("polygon")>0){
-                    return new SimpleFillSymbol().toJson();
-                }else if(type.indexOf("polyline")>0){
-                    return new SimpleLineSymbol().toJson();
-                }else{
-                    return new SimpleMarkerSymbol().toJson();
-                }
             }
         });
     </script>
