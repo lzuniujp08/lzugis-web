@@ -25,4 +25,7 @@
         <shproot>D:/lzugis/code/lzugis-web/src/main/resources/geocode/</shproot>
         <savepath>D:/BaiduNetdiskDownload/</savepath>
     </geocode>
+    <shp-upload>
+        <path>/Users/lzugis/Documents/shppath/</path>
+    </shp-upload>
 </sys>

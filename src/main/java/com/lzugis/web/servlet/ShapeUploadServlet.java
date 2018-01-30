@@ -1,5 +1,6 @@
 package com.lzugis.web.servlet;
 
+import com.lzugis.helper.CommonConfig;
 import com.lzugis.helper.CommonMethod;
 import com.lzugis.services.utils.ShpFormatUtil;
 import com.lzugis.services.utils.ZipUtil;
@@ -34,7 +35,7 @@ public class ShapeUploadServlet extends HttpServlet {
 
     public ShapeUploadServlet() {
         super();
-        rootPath = "D:\\shppath\\";
+        rootPath = CommonConfig.getVal("shp-upload.path");
         zipUtil = new ZipUtil();
         shpUtil = new ShpFormatUtil();
         cm = new CommonMethod();
