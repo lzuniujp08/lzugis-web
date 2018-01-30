@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,14 +23,20 @@ import java.util.Map;
 /**
  * Created by admin on 2017/9/10.
  */
-@WebServlet(description = "shp file upload", urlPatterns =  {"/file-upload"})
-public class FileUploadServlet extends HttpServlet {
+@WebServlet(description = "shp file upload", urlPatterns =  {"/shp-upload"})
+public class ShapeUploadServlet extends HttpServlet {
 
     private String rootPath = "";
+    private ZipUtil zipUtil;
+    private ShpFormatUtil shpUtil;
+    private CommonMethod cm;
 
-    public FileUploadServlet() {
+    public ShapeUploadServlet() {
         super();
         rootPath = "D:\\shppath\\";
+        zipUtil = new ZipUtil();
+        shpUtil = new ShpFormatUtil();
+        cm = new CommonMethod();
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -82,7 +89,12 @@ public class FileUploadServlet extends HttpServlet {
                     }
                     out.close();
                     in.close();
+                    String shpPath = zipUtil.unZipFiles(fileName, rootPath);
+                    System.out.println("shp path"+shpPath);
+                    StringBuffer json = shpUtil.shp2Json(shpPath);
                     result.put("status", "200");
+                    result.put("geojson", json.toString());
+//                    cm.append2File(rootPath + "json.json", json.toString());
                     JSONObject.writeJSONString(result, response.getWriter());
                 }
             }
