@@ -52,9 +52,14 @@ public class CommonMethod {
     }
     public void append2File(String file, String content, boolean isclear) {
         File f = new File(file);
-        if(isclear && f.exists()){
-            f.delete();
-        }
+
+        //文件夹是否存在，不存在，则创建
+        File filePath = new File(f.getPath());
+        if(!filePath.exists()) filePath.mkdirs();
+
+        //文件存在且删除，删除原有文件
+        if(isclear && f.exists()) f.delete();
+
         FileWriter fw = null;
         try {
             fw = new FileWriter(f, true);
@@ -205,9 +210,11 @@ public class CommonMethod {
     }
 
     public static void main(String[] args){
-        File file = new File("d:/province.zip");
-        String fileName = file.getName();
-        fileName = fileName.substring(0, fileName.lastIndexOf("."));
-        System.out.println("方法一：fileName = " + fileName);
+        File file = new File("d:/test/province.zip");
+        System.out.println(file.getPath());
+        File filePath = new File(file.getPath());
+        if(!filePath.exists()){
+            filePath.mkdirs();
+        }
     }
 }
