@@ -24,6 +24,18 @@
 
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
 
+    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
+    <bean id="viewResolver"
+          class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <!--结果视图的前缀-->
+        <property name="prefix" value="/WEB-INF/page/"/>
+        <!--结果视图的后缀-->
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <bean name="/login.do" class="com.lzugis.web.controller.WebController"></bean>
+
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
         <property name="messageConverters">
             <list>

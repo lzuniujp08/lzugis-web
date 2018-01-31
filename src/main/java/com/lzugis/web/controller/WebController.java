@@ -15,4 +15,15 @@ public class WebController {
         mav.getModel().put("msg", "Hello Lzugis");
         return mav;
     }
+
+    /**
+     * 后台登录
+     * @return
+     */
+    @RequestMapping(value="a/login")
+    public ModelAndView backendLogin (){
+        ModelAndView mav = new ModelAndView("login");
+        mav.getModel().put("msg", "Hello admin");
+        return mav;
+    }
 }
