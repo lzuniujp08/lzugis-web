@@ -34,8 +34,6 @@
         <property name="suffix" value=".jsp"/>
     </bean>
 
-    <bean name="/login.do" class="com.lzugis.web.controller.WebController"></bean>
-
     <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
         <property name="messageConverters">
             <list>
