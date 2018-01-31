@@ -22,22 +22,32 @@
         }
         .progress{
             width: 40%;
-            height: 20px;
             position: absolute;
             top:calc(50% - 10px);
             left: 30%;
         }
+        @keyframes progress-bar-stripes {
+            from { background-position: 20px 0; }
+            to { background-position: 0 0; }
+        }
         #progress{
-            height: 100%;
             background: red;
             width: 0;
+            transition: width .6s ease;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            height: 20px;
+            line-height: 20px;
+        }
+        .progress-bar-animated {
+            animation: progress-bar-stripes;
         }
         .dm-uploader{
             position: absolute;
             top: 10px;
             right: 10px;
-            width: 200px;
-            height: 100px;
+            width: 220px;
             border: 1px solid #cccccc;
             box-shadow: 1px 1px 2px #ccc;
             -webkit-border-radius: 4px;
@@ -48,11 +58,15 @@
             background: white;
         }
         .dm-uploader.active{
-            border: 1px solid #ff0000;
+            border: 2px solid #ff0000;
         }
         .dm-uploader h4{
             margin: 0 0 10px 0;
             padding: 8px 0;
+        }
+        .dm-uploader .memo{
+            line-height: 22px;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -61,7 +75,7 @@
 <div class="modal fade" id="loading" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop='static'>
     <div class="modal-dialog" role="document">
         <div class="progress">
-            <div id="progress"></div>
+            <div id="progress" class="progress-bar-animated"></div>
         </div>
     </div>
 </div>
@@ -72,6 +86,12 @@
             <div class="btn btn-primary btn-block mb-5">
                 <span>选择上传文件</span>
                 <input type="file" title='Click to add Files' />
+            </div>
+            <div class="memo">
+                <b>说明：</b><br>
+                1、可同时上传个文件；<br>
+                2、文件格式为*.zip的压缩包；<br>
+                3、单个文件的大小限制为1M；
             </div>
         </div>
     </div>
@@ -131,10 +151,10 @@
             $('#loading').modal('show');
         },
         onDragEnter: function () {
-            $("#drag-and-drop-zone").addClass("active");
+            this.addClass("active");
         },
         onDragLeave: function () {
-            $("#drag-and-drop-zone").removeClass("active");
+            this.removeClass("active");
         },
         onUploadComplete: function () {
             $('#loading').modal('hide');
@@ -150,9 +170,23 @@
             console.log(message);
         },
         onUploadProgress: function (id, percent) {
-            $("#progress").css("width", percent+"%");
+            var color = false;
+            var active = true;
+            var bar = $("#progress");
+            bar.width(percent + '%').attr('aria-valuenow', percent);
+            bar.toggleClass('progress-bar-striped progress-bar-animated', active);
+            if (percent === 0){
+                bar.html('');
+            } else {
+                bar.html(percent + '%');
+            }
+
+            if (color !== false){
+                bar.removeClass('bg-success bg-info bg-warning bg-danger');
+                bar.addClass('bg-' + color);
+            }
         }
-    })
+    });
 
     function addGeojson(url){
         $.get(url, function(geojson){
