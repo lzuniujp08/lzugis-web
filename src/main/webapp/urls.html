@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>链接维护界面</title>
+    <link rel="stylesheet" type="text/css" href="plugin/jquery/ztree/css/zTreeStyle/zTreeStyle.css">
+    <link rel="stylesheet" type="text/css" href="css/urls.css">
+</head>
+<body>
+<div class="layout-title">
+    url维护界面
+    <button class="button-right" id="export"><a target="_blank" href="urls/getTreeData?isdown=true">导出json</a></button>
+</div>
+<ul class="layout-left ztree" id="trees">
+</ul>
+<div class="layout-right">
+    <table cellspacing="0" cellpadding="0" class="form-table">
+        <tr style="display: none;">
+            <th>节点ID：</th>
+            <td><input type="hidden" id="id"></td>
+        </tr>
+        <tr>
+            <th>父节点ID：</th>
+            <td>
+                <input type="hidden" id="pid">
+                <input type="text" id="ptext">
+                <ul class="ztree menu-tree" id="ztree"></ul>
+            </td>
+        </tr>
+        <tr>
+            <th>标题：</th>
+            <td><input type="text" id="title" placeholder="标题"></td>
+        </tr>
+        <tr>
+            <th>地址：</th>
+            <td><input type="text" id="url" placeholder="地址"></td>
+        </tr>
+        <tr>
+            <th></th>
+            <td>
+                <input type="checkbox" id="isopen" checked="checked">是否展开
+                <input type="checkbox" id="isshow" checked="checked">是否显示
+                <input type="checkbox" id="issenior">是否高级
+            </td>
+        </tr>
+        <tr>
+            <th>扩展信息：</th>
+            <td>
+                <textarea id="expand" rows="8"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align: center;">
+                <input id="submit" type="button" value="保存">
+            </td>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript" src="plugin/jquery/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="plugin/jquery/ztree/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="js/urls.js"></script>
+</body>
+</html>
