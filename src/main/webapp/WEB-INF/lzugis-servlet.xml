@@ -103,9 +103,13 @@
     </bean>
 
     <!--websocket 配置-->
-    <bean id="websocket" class="com.lzugis.web.websocket.WebsocketEndPoint"/>
+    <bean id="websocket" class="com.lzugis.web.websocket.LocationTrackEndPoint"/>
+    <!--<bean id="loaction" class="com.lzugis.web.websocket.LocationTrackEndPoint"/>-->
+
     <websocket:handlers  allowed-origins="*">
         <websocket:mapping path="/websocket" handler="websocket"/>
+        <!--<websocket:mapping path="/loaction" handler="loaction"/>-->
+
         <websocket:handshake-interceptors>
             <bean class="com.lzugis.web.websocket.HandshakeInterceptor"/>
         </websocket:handshake-interceptors>

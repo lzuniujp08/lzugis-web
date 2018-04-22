@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>按起终点经纬度规划路线</title>
+    <link rel="stylesheet" href="http://cache.amap.com/lbs/static/main1119.css"/>
+    <style type="text/css">
+        #panel {
+            position: fixed;
+            background-color: white;
+            max-height: 90%;
+            overflow-y: auto;
+            top: 10px;
+            right: 10px;
+            width: 280px;
+        }
+    </style>
+    <script type="text/javascript" src="http://webapi.amap.com/maps?v=1.4.3&key=c002f8d098d53ba8815a61fd11b67627&plugin=AMap.Driving"></script>
+    <script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
+</head>
+<body>
+<div id="container"></div>
+<div id="panel"></div>
+<script type="text/javascript">
+    //基本地图加载
+    var map = new AMap.Map("container", {
+        resizeEnable: true,
+        center: [116.397428, 39.90923],//地图中心点
+        zoom: 13 //地图显示的缩放级别
+    });
+    //构造路线导航类
+    var driving = new AMap.Driving({
+        map: map,
+        panel: "panel"
+    });
+    // 根据起终点经纬度规划驾车导航路线
+    driving.search(new AMap.LngLat(116.379028, 39.865042), new AMap.LngLat(116.427281, 39.903719));
+    driving.on("complete", function (result) {
+        console.log(result);
+        var routes = result.routes;
+        var sqls = [];
+        for(var i=0;i<routes.length;i++){
+            var _route = routes[i];
+            var steps = _route.steps;
+            for(var j=0;j<steps.length;j++){
+                var _step = steps[j];
+                var tmcsPaths = _step.tmcsPaths;
+                for(var m = 0;m<tmcsPaths.length;m++){
+                    var _coord = [];
+                    var path = tmcsPaths[m].path;
+                    for(var k=0;k<path.length;k++){
+                        var _path = path[k];//_path.lng, _path.lat
+                        var sql = "insert into location_track(lon, lat, create_time, geom) values"+
+                        "("+_path.lng+", "+_path.lat+", now(), st_point("+_path.lng+", "+_path.lat+"));"
+                        sqls.push(sql);
+                    }
+                }
+
+            }
+        }
+        console.log(sqls.join("\r\n"));
+    })
+</script>
+</body>
+</html>
