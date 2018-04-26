@@ -41,6 +41,11 @@ public class TestService {
         return list;
     }
 
+    public List getGpsData(){
+        if(testDao.equals(null)) testDao = new TestDao();
+        return testDao.getGpsData();
+    }
+
     public Map addGeoPOI(GeocodePoint poi){
         Map result = new HashMap();
         if(!StringUtils.isNotBlank(poi.getId())){

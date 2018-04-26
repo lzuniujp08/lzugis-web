@@ -39,6 +39,11 @@ public class TestDao extends CommonDao {
         return list;
     }
 
+    public List getGpsData(){
+        String sql = "select lon||','||lat as lonlat from location_track order by create_time";
+        return this.jdbcTemplate.queryForList(sql);
+    }
+
     public void jdbcTempTest() {
         // sql语句
         String dsql ="delete from capital_buffer where id=?";
