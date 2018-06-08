@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>websocket</title>
+    <link rel="stylesheet" type="text/css" href="css/footer.css"/>
+</head>
+<body>
+<ul class="box-province" id="province"></ul>
+<ul class="box-city" id="city"></ul>
+<script src="plugin/jquery/jquery-3.1.1.min.js"></script>
+<script type="text/javascript">
+    Array.prototype.indexOf = function(val) {
+        for (var i = 0; i < this.length; i++) {
+            if (this[i] == val) return i;
+        }
+        return -1;
+    };
+    Array.prototype.remove = function(val) {
+        var index = this.indexOf(val);
+        if (index > -1) {
+            this.splice(index, 1);
+        }
+    };
+
+
+    var provinces = {},
+        selectedP = [],
+        selectedC = [];
+
+    var provDom = $("#province"),
+        cityDom = $("#city");
+
+    $.get("js/city.geojson", function (result) {
+        result = result.features;
+        for(var i=0,len=result.length;i<len;i++){
+            var _city = result[i].properties;
+            if(!provinces[_city.pcode]) {
+                provinces[_city.pcode] = {
+                    "code":_city.pcode,
+                    "name":_city.pname,
+                    "city":[]
+                };
+            }
+            provinces[_city.pcode]["city"].push(_city);
+        }
+        for(var pcode in provinces){
+            var _province = provinces[pcode];
+            var _p = $("<li/>").html(_province.name).data("attr", _province);
+            provDom.append(_p);
+
+            _p.on("click", function () {
+                var _pData = $(this).data("attr");
+
+                addCityList(_pData.city);
+
+                if($(this).hasClass("active")){
+                    $(this).removeClass("active");
+                    selectedP.remove(_pData.code);
+                }else {
+                    $(this).addClass("active");
+                    if(selectedP.indexOf(_pData.code)===-1) selectedP.push(_pData.code);
+                }
+            })
+        }
+    });
+    
+    function addCityList(cities) {
+        cityDom.html("");
+        for(var i=0,len=cities.length;i<len;i++){
+            var _city = cities[i];
+            var _c = $("<li/>").html(_city.name).data("attr", _city);
+            cityDom.append(_c);
+
+            _c.on("click", function () {
+                var _cData = $(this).data("attr");
+                if($(this).hasClass("active")){
+                    $(this).removeClass("active");
+                    selectedC.remove(_cData.name);
+                }else {
+                    $(this).addClass("active");
+                    if(selectedC.indexOf(_cData.code)===-1) selectedC.push(_cData.name);
+                }
+            })
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+@charset "utf-8";
+
+$main-color: #00a9ef;
+
+body, html{
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+ul{
+  margin: 0;
+  list-style: none;
+  padding: .4rem 0;
+  height: 100%;
+  float: left;
+  overflow-y: auto;
+  li{
+    color: $main-color;
+    cursor: pointer;
+    &:before{
+      content: "☐";
+      margin-right: .4rem;
+      font-size: 1rem;
+    }
+    &.active{
+      background-color: $main-color;
+      color: white;
+      font-weight: bold;
+      &:before{
+        content: "☑";
+        font-size: 1rem;
+      }
+    }
+  }
+  &.box-province{
+    width: 10rem;
+    box-shadow: 1px 1px 0 #ccc;
+    li{
+      padding-left: .6rem;
+      height: 2rem;
+      line-height: 2rem;
+      border-bottom: 1px dashed $main-color;
+      &.active{
+        border-bottom: 1px dashed white;
+      }
+    }
+  }
+  &.box-city{
+    width: calc(100% - 10rem);
+    li{
+      float: left;
+      margin-left: .6rem;
+      margin-top: .6rem;
+      padding: .3rem .5rem;
+      border: 1px solid $main-color;
+      border-radius: .2rem;
+    }
+  }
+}
+
