@@ -42,7 +42,7 @@
             params: {'FORMAT': 'image/png',
                 'VERSION': '1.1.1',
                 STYLES: '',
-                LAYERS: 'bj_grid:road'
+                LAYERS: 'bj_grid:road, bj_grid:road_vertices_pgr'
             }
         })
     });
@@ -97,7 +97,7 @@
     
     draw.on("drawend", function (evt) {
         var _feature = evt.feature;
-        var _text = flag===0?"始":"终";
+        var _text = flag===0?"起":"终";
         _feature.set("text", _text);
         flag++;
         var _coord = evt.feature.getGeometry().getCoordinates();
