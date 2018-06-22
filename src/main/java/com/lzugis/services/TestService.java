@@ -41,6 +41,10 @@ public class TestService {
         return list;
     }
 
+    public Map getShortRoute(double startx, double starty, double endx, double endy){
+        return  testDao.getShortRoute(startx, starty, endx, endy);
+    }
+
     public List getGpsData(){
         if(testDao.equals(null)) testDao = new TestDao();
         return testDao.getGpsData();

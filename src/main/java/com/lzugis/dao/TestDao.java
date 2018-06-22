@@ -2,8 +2,16 @@ package com.lzugis.dao;
 
 import com.lzugis.dao.jdbc.util.AnnotationUtil;
 import com.lzugis.helper.CommonConfig;
+import com.lzugis.helper.CommonMethod;
 import com.lzugis.services.model.County;
 import com.lzugis.services.model.GeocodePoint;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.WKTReader;
+import org.apache.commons.lang.StringUtils;
+import org.geotools.geometry.jts.JTSFactoryFinder;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -11,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import org.sqlite.SQLiteDataSource;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -35,8 +44,18 @@ public class TestDao extends CommonDao {
     }
 
     public List getDbData() throws Exception{
-        List list = jdbcTemplate.queryForList("select name, lon, lat from capital");
+        List list = jdbcTemplate.queryForList("SELECT gid, st_astext(geom) from layer_segment");
         return list;
+    }
+
+    public Map getShortRoute(double startx, double starty, double endx, double endy){
+        try {
+            String sql = "SELECT ST_Astext(pgr_fromatob) AS wkt FROM pgr_fromAtoB('road', ?, ?, ?, ?)";
+            return jdbcTemplate.queryForMap(sql, new Object[]{startx, starty, endx, endy});
+        }catch (Exception e){
+            e.printStackTrace();
+            return  null;
+        }
     }
 
     public List getGpsData(){
@@ -53,42 +72,37 @@ public class TestDao extends CommonDao {
         System.out.println(num.toString());
     }
 
+    public void getPointsData(){
+        List list = jdbcTemplate.queryForList("SELECT gid, st_astext(geom) as wkt from layer_segment");
+        GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory( null );
+        WKTReader reader = new WKTReader( geometryFactory );
+       try {
+           for(int i=0;i<list.size();i++){
+               Map map = (Map)list.get(i);
+               String wkt = map.get("wkt").toString();
+               Geometry geom = (Geometry) reader.read(wkt);
+               Coordinate[] coords = geom.getCoordinates();
+               String[] pointData = new String[coords.length];
+               for(int j=0;j<coords.length;j++){
+                   Coordinate coord = coords[j];
+                   pointData[j] =  "["+coord.x+", "+coord.y+"]";
+               }
+               String sql = "update layer_segment set points_data = ? where gid = ?";
+               jdbcTemplate.update(sql, new Object[]{StringUtils.join(pointData, ","), map.get("gid")});
+
+               System.out.println(map.get("gid").toString());
+           }
+       }catch (Exception e){
+           e.printStackTrace();
+       }
+
+    }
+
     public static void main(String[] args){
         TestDao test = new TestDao();
-        //插入数据
-//        for(int i=0;i<10;i++){
-//            String name = "LZUGIS"+i;
-//            GeocodePoint point = new GeocodePoint();
-//            point.setId(UUID.randomUUID().toString());
-//            point.setName(name);
-//            int flat = test.save(point);
-//            if(flat>0)System.out.println(name+" has saved success!");
-//        }
-
-        //获取对象以及更新对象
-//        String name="LZUGIS18";
-//        GeocodePoint point = (GeocodePoint)test.get(GeocodePoint.class, name, "name");
-//        point.setName("LZUGIS10");
-//        test.save(point);
-//        if(null==point){
-//            System.out.println(name);
-//        }else{
-//            System.out.println(point.getName());
-//        }
-        //删除对象
-//        test.delete(test.table(GeocodePoint.class), "name", point.getName());
-
-        //分页查询
-        String select = "select gid, name, x, y";
-        String exceptSelect =  " from "+test.table(County.class)+" t where 1=1 ";
-        Page<County> page = test.paginate(County.class, 1, 10, select,exceptSelect,null);
-        System.out.println(page.getPageNumber());
-        System.out.println(page.getTotalPage());
-        System.out.println(page.getTotalRow());
-        System.out.println(page.getPageSize());
-        System.out.println(page.getList().toString());
-
-
-//        test.jdbcTempTest();
-    }/**/
+        String sql = "select id, pid, name, st_astext(geom) as wkt from bj_boundry";
+        List list = test.jdbcTemplate.queryForList(sql);
+        CommonMethod cm = new CommonMethod();
+        cm.append2File("d://bj_boundry.json", JSONArray.toJSONString(list), true);
+    }
 }

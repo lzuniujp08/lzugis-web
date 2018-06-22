@@ -65,6 +65,18 @@ public class TestController {
         }
     }
 
+    @RequestMapping(value="route")
+    @ResponseBody
+    public Map getShortRoute(double startx, double starty, double endx, double endy){
+        try {
+            Map result = testService.getShortRoute(startx, starty, endx, endy);
+            return result;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     @RequestMapping({"/poi/add"})
     @ResponseBody
     public List addGeoPOI(GeocodePoint poi){
